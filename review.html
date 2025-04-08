@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>รีวิวที่พัก - Glampin'Go</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+        integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        /* Base styles */
+        body {
+            font-family: 'Kanit', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+            position: relative; /* Needed for absolute positioning of animation */
+            overflow-x: hidden; /* Prevent horizontal scroll from animation */
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            position: relative; /* Ensure container context */
+            z-index: 1; /* Keep content above animation background */
+        }
+
+        /* Header and Back Button */
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        h1 {
+            color: #084298; /* Dark blue */
+            margin: 0;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.15);
+            flex-grow: 1;
+            text-align: center;
+            padding-left: 80px; /* Adjust space for back button */
+        }
+
+        .back-button {
+            background-color: #6c757d; /* Gray */
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            text-decoration: none; /* Remove underline from link */
+            transition: background-color 0.3s ease, transform 0.1s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .back-button:hover {
+            background-color: #5a6268; /* Darker Gray */
+            transform: translateY(-1px);
+        }
+
+        /* Search/Select Styles */
+        #search-container {
+            margin-bottom: 25px;
+        }
+
+        #hotel-select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-family: 'Kanit', sans-serif; /* Ensure font consistency */
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.06);
+            background-color: #fff; /* Ensure background color */
+            appearance: none; /* Remove default arrow */
+            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%236c757d%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 10px 10px;
+            padding-right: 35px; /* Space for custom arrow */
+        }
+
+        #hotel-select:focus {
+            border-color: #084298;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(8, 66, 152, 0.15);
+        }
+
+        /* Review Display Styles */
+        .review-section {
+            margin-bottom: 30px;
+        }
+
+        .review {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #dee2e6;
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+
+        .review:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .review h3 {
+            margin-top: 0;
+            margin-bottom: 8px; /* Spacing */
+            color: #2c3e50; /* Dark grayish blue */
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .review:hover h3 {
+            color: #084298; /* Dark blue on hover */
+        }
+
+        .review .rating {
+            color: #ffc107; /* Gold */
+            margin-bottom: 10px;
+            font-size: 1.1rem; /* Slightly smaller */
+        }
+        .review .reviewer-name {
+            font-size: 0.9rem;
+            color: #6c757d; /* Gray */
+            margin-bottom: 10px;
+            font-style: italic;
+        }
+
+        .review p:last-of-type { /* Style the comment */
+            color: #343a40; /* Darker gray */
+            line-height: 1.6;
+            margin-bottom: 0;
+        }
+
+        /* Review Form Styles */
+        .review-form {
+            padding: 25px;
+            background-color: #e9ecef; /* Light gray */
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border: 1px solid #dee2e6;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .review-form h2 {
+            color: #2c3e50;
+            margin-top: 0;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .review-form textarea {
+            width: 100%;
+            box-sizing: border-box; /* Include padding and border in width */
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-family: 'Kanit', sans-serif;
+            resize: vertical;
+            min-height: 80px; /* Minimum height */
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.06);
+        }
+
+        .review-form textarea:focus {
+            border-color: #084298;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(8, 66, 152, 0.15);
+        }
+
+        .review-form button {
+            background-color: #084298; /* Dark blue */
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            display: block; /* Center button */
+            margin: 0 auto; /* Center button */
+        }
+
+        .review-form button:hover {
+            background-color: #062e63; /* Darker blue */
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .review-form button:active {
+            transform: translateY(0);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Star Rating Styles */
+        .star-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px; /* More space */
+        }
+        .star {
+            cursor: pointer;
+            font-size: 1.8rem; /* Larger stars */
+            color: #ced4da; /* Lighter gray for inactive */
+            transition: color 0.2s ease, transform 0.1s ease;
+            margin: 0 5px; /* Spacing between stars */
+        }
+        .star:hover {
+            color: #ffda6a; /* Lighter gold on hover */
+            transform: scale(1.1);
+        }
+        .star.active {
+            color: #ffc107; /* Gold */
+        }
+
+        /* No Results Message */
+        #no-results {
+            text-align: center;
+            color: #6c757d;
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-style: italic;
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+        /* Notification Styles */
+        #notification {
+            position: fixed;
+            top: -100px; /* Start off screen */
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #198754; /* Green for success */
+            color: white;
+            padding: 12px 25px;
+            border-radius: 0 0 8px 8px; /* Rounded bottom */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            z-index: 1001; /* Above container */
+            transition: top 0.5s ease-in-out;
+            font-size: 1rem;
+            font-weight: 500;
+            text-align: center;
+            min-width: 250px;
+        }
+        #notification.show {
+            top: 0;
+        }
+        #notification.error {
+             background-color: #dc3545; /* Red for error */
+        }
+
+        /* Cat Animation Styles */
+        #cat-animation-container {
+            position: fixed;
+            bottom: -100px; /* Start below screen */
+            left: 0;
+            width: 100%;
+            height: 80px; /* Adjust height as needed */
+            z-index: 1000; /* Behind notification but above body */
+            pointer-events: none; /* Allow clicks through */
+            opacity: 0;
+            transition: bottom 1s ease-out, opacity 0.5s ease-out;
+        }
+        #cat-animation-container.show {
+            bottom: 10px; /* Position near bottom */
+            opacity: 1;
+        }
+        .cat {
+            font-size: 3rem; /* Cat size */
+            position: absolute;
+            bottom: 0;
+            left: -50px; /* Start off-screen left */
+            animation: runAcross 4s linear forwards;
+        }
+
+        @keyframes runAcross {
+            0% { left: -60px; transform: scaleX(1); } /* Start left */
+            48% { transform: scaleX(1); } /* Facing right */
+            50% { left: calc(100% + 0px); transform: scaleX(-1); } /* Flip at the edge */
+            52% { transform: scaleX(-1); } /* Facing left */
+            98% { transform: scaleX(-1); } /* Facing left */
+            100% { left: -60px; transform: scaleX(-1); } /* End left (facing left) */
+        }
+
+
+        /* FadeIn Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div id="notification"></div>
+
+    <div id="cat-animation-container">
+        <span class="cat">🐈</span>
+    </div>
+
+    <div class="container">
+        <div class="header-container">
+            <a href="home.html" class="back-button"> <i class="fas fa-arrow-left"></i> กลับหน้าหลัก
+            </a>
+            <h1>รีวิวที่พัก</h1>
+        </div>
+
+        <div id="search-container">
+            <select id="hotel-select" aria-label="เลือกที่พัก">
+                <option value="">-- กรุณาเลือกที่พักที่จะรีวิว --</option>
+                </select>
+        </div>
+
+        <div class="review-form">
+            <h2>เขียนรีวิวของคุณ</h2>
+            <form id="review-form-element"> <textarea id="review-input" rows="4" placeholder="เขียนรีวิวของคุณที่นี่..." aria-label="เขียนรีวิว"></textarea>
+                <div class="star-container" aria-label="ให้คะแนน">
+                    <span class="star" data-rating="1" role="button" aria-label="1 ดาว">☆</span>
+                    <span class="star" data-rating="2" role="button" aria-label="2 ดาว">☆</span>
+                    <span class="star" data-rating="3" role="button" aria-label="3 ดาว">☆</span>
+                    <span class="star" data-rating="4" role="button" aria-label="4 ดาว">☆</span>
+                    <span class="star" data-rating="5" role="button" aria-label="5 ดาว">☆</span>
+                </div>
+                <input type="hidden" id="rating-input" name="rating" value="0">
+                <button type="submit" id="submit-review">ส่งรีวิว</button>
+            </form>
+        </div>
+
+        <div id="review-section">
+            <p id="no-results">กรุณาเลือกที่พักเพื่อดูรีวิว</p> </div>
+    </div>
+
+    <script>
+        // --- Data ---
+        // Note: In a real app, fetch this from a central source or the main page.
+        const accommodations = [
+            { id: 1, name: 'Hintok River Camp at Hellfire Pass กาญจนบุรี' },
+            { id: 2, name: 'Lalamukha Tented Resort เขาใหญ่' },
+            { id: 3, name: 'Mont Blanc Glamping Khao Yai เขาใหญ่' },
+            { id: 4, name: 'Jumptla Campiness นครปฐม' },
+            { id: 5, name: 'River Tales เพชรบุรี' },
+            { id: 6, name: 'Social Camp ราชบุรี' },
+            { id: 7, name: 'Slow Life Camping สัตหีบ' },
+            { id: 8, name: 'The Birder’s Lodge เขาใหญ่' },
+            { id: 9, name: 'Te Mata Glamping เขาใหญ่' },
+        ];
+
+        // --- DOM Element References ---
+        const reviewSection = document.getElementById("review-section");
+        const hotelSelect = document.getElementById("hotel-select");
+        const submitReviewButton = document.getElementById("submit-review");
+        const reviewInput = document.getElementById("review-input");
+        const ratingStars = document.querySelectorAll('.star');
+        const ratingInput = document.getElementById('rating-input');
+        const notificationEl = document.getElementById('notification');
+        const catAnimationContainer = document.getElementById('cat-animation-container');
+        const reviewFormElement = document.getElementById('review-form-element'); // Get form element
+
+        // --- State ---
+        let reviews = []; // Will be loaded from localStorage
+        let selectedRating = 0;
+        let notificationTimeout;
+        let catAnimationTimeout;
+
+        // --- Functions ---
+
+        /**
+         * Shows a notification message.
+         * @param {string} message - The message to display.
+         * @param {string} [type='success'] - 'success' or 'error'.
+         * @param {number} [duration=3000] - Duration in milliseconds.
+         */
+        function showNotification(message, type = 'success', duration = 3000) {
+            if (!notificationEl) return;
+            clearTimeout(notificationTimeout); // Clear previous timeout
+
+            notificationEl.textContent = message;
+            notificationEl.className = 'show'; // Add 'show' class
+            if (type === 'error') {
+                notificationEl.classList.add('error');
+            } else {
+                notificationEl.classList.remove('error');
+            }
+
+            notificationTimeout = setTimeout(() => {
+                notificationEl.classList.remove('show');
+            }, duration);
+        }
+
+        /**
+         * Triggers the cat animation.
+         */
+        function triggerCatAnimation() {
+            if (!catAnimationContainer) return;
+            clearTimeout(catAnimationTimeout); // Clear previous timeout
+
+            catAnimationContainer.classList.add('show');
+
+            // Reset animation by removing and re-adding the cat element
+            const catElement = catAnimationContainer.querySelector('.cat');
+            if(catElement) {
+                const newCat = catElement.cloneNode(true);
+                catAnimationContainer.replaceChild(newCat, catElement);
+            }
+
+
+            catAnimationTimeout = setTimeout(() => {
+                catAnimationContainer.classList.remove('show');
+            }, 4500); // Slightly longer than animation duration
+        }
+
+        /**
+         * Loads reviews from Local Storage.
+         */
+        function loadReviews() {
+            const storedReviews = localStorage.getItem('glampingReviews');
+            if (storedReviews) {
+                try {
+                    reviews = JSON.parse(storedReviews);
+                } catch (e) {
+                    console.error("Error parsing reviews from localStorage:", e);
+                    reviews = []; // Fallback to empty array on error
+                    localStorage.removeItem('glampingReviews'); // Clear corrupted data
+                }
+            } else {
+                // Optional: Initialize with default reviews if none are stored
+                // reviews = [ { hotel: 'Hintok River Camp...', name: 'ผู้ใช้1', rating: 5, comment: '...' }, ... ];
+                reviews = []; // Start fresh if no stored data
+            }
+        }
+
+        /**
+         * Saves the current reviews array to Local Storage.
+         */
+        function saveReviews() {
+            try {
+                localStorage.setItem('glampingReviews', JSON.stringify(reviews));
+            } catch (e) {
+                console.error("Error saving reviews to localStorage:", e);
+                showNotification("เกิดข้อผิดพลาดในการบันทึกรีวิว", "error");
+            }
+        }
+
+        /**
+         * Displays reviews for the selected hotel.
+         * @param {string} [selectedHotel=""] - The name of the hotel to filter by.
+         */
+        function displayReviews(selectedHotel = "") {
+            reviewSection.innerHTML = ""; // Clear previous reviews
+
+            if (selectedHotel === "") {
+                 reviewSection.innerHTML = `<p id="no-results">กรุณาเลือกที่พักเพื่อดูรีวิว</p>`;
+                 return;
+            }
+
+            const filteredReviews = reviews.filter(review =>
+                review.hotel === selectedHotel // Exact match needed now
+            );
+
+            if (filteredReviews.length === 0) {
+                reviewSection.innerHTML = `<p id="no-results">ยังไม่มีรีวิวสำหรับ "${selectedHotel}"</p>`;
+                return;
+            }
+
+            // Display all reviews for the selected hotel (no limit)
+            filteredReviews.forEach(review => {
+                const reviewDiv = document.createElement("div");
+                reviewDiv.className = "review";
+                reviewDiv.style.animation = 'fadeIn 0.5s ease-out'; // Add fade-in effect
+
+                let stars = '';
+                for (let i = 0; i < 5; i++) {
+                    stars += i < review.rating ? '★' : '☆';
+                }
+
+                reviewDiv.innerHTML = `
+                    <h3>${review.hotel}</h3>
+                    <div class="rating">${stars}</div>
+                    <div class="reviewer-name">โดย: ${review.name || 'ผู้ใช้'}</div>
+                    <p>${review.comment}</p>
+                `;
+                reviewSection.appendChild(reviewDiv);
+            });
+        }
+
+        /**
+         * Populates the hotel selection dropdown.
+         */
+        function populateHotelOptions() {
+            // Clear existing options except the placeholder
+            hotelSelect.innerHTML = '<option value="">-- กรุณาเลือกที่พักที่จะรีวิว --</option>';
+            accommodations.forEach(hotel => {
+                const option = document.createElement("option");
+                option.value = hotel.name;
+                option.textContent = hotel.name;
+                hotelSelect.appendChild(option);
+            });
+        }
+
+        /**
+         * Handles the submission of a new review.
+         * @param {Event} event - The form submission event.
+         */
+        function handleReviewSubmit(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const newReviewText = reviewInput.value.trim();
+            const selectedHotel = hotelSelect.value; // Get value directly
+            const ratingValue = selectedRating; // Use the state variable
+
+            // --- Validation ---
+            if (selectedHotel === "") {
+                showNotification("กรุณาเลือกที่พักที่ต้องการรีวิว", "error");
+                hotelSelect.focus();
+                return;
+            }
+            if (newReviewText === "") {
+                showNotification("กรุณาเขียนรีวิวก่อนส่ง", "error");
+                reviewInput.focus();
+                return;
+            }
+            if (ratingValue === 0) {
+                showNotification("กรุณาให้คะแนน (คลิกดาว)", "error");
+                return;
+            }
+
+            // --- Create and Add Review ---
+            const newReview = {
+                hotel: selectedHotel,
+                name: "ผู้ใช้ใหม่", // Or prompt for name
+                rating: ratingValue,
+                comment: newReviewText,
+                timestamp: new Date().toISOString() // Optional: Add timestamp
+            };
+
+            reviews.unshift(newReview); // Add to the beginning of the array
+            saveReviews(); // Save updated reviews to localStorage
+
+            // --- Update UI and Reset Form ---
+            displayReviews(selectedHotel); // Refresh reviews for the current hotel
+            reviewFormElement.reset(); // Reset the form elements
+            hotelSelect.value = selectedHotel; // Keep hotel selected after submit
+            ratingInput.value = 0; // Reset hidden input
+            selectedRating = 0; // Reset rating state
+            ratingStars.forEach(star => { // Reset visual stars
+                star.classList.remove('active');
+                star.textContent = '☆';
+            });
+
+            // --- Show Confirmation and Animation ---
+            showNotification("ขอบคุณสำหรับรีวิว!", "success");
+            triggerCatAnimation();
+        }
+
+        // --- Event Listeners ---
+
+        // Star rating interaction
+        ratingStars.forEach(star => {
+            star.addEventListener('click', function() {
+                const rating = parseInt(this.getAttribute('data-rating'));
+                selectedRating = rating; // Update state variable
+                ratingInput.value = rating; // Update hidden input
+
+                // Update visual stars
+                ratingStars.forEach(s => {
+                    const sRating = parseInt(s.getAttribute('data-rating'));
+                    const isActive = sRating <= rating;
+                    s.classList.toggle('active', isActive);
+                    s.textContent = isActive ? '★' : '☆';
+                });
+            });
+        });
+
+        // Form submission listener
+        if (reviewFormElement) {
+            reviewFormElement.addEventListener("submit", handleReviewSubmit);
+        } else {
+            console.error("Review form element not found!");
+        }
+
+        // Hotel selection change listener
+        hotelSelect.addEventListener("change", () => {
+            displayReviews(hotelSelect.value);
+        });
+
+        // --- Initial Load ---
+        window.onload = () => {
+            loadReviews(); // Load reviews from storage first
+            populateHotelOptions();
+            // Don't display reviews initially, wait for user selection
+            // displayReviews(); // Remove this line
+        };
+    </script>
+</body>
+</html>

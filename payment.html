@@ -1,0 +1,1245 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏕️ ชำระเงิน - ใบเสร็จ</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"
+        integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+        integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&family=Courier+Prime:wght@400;700&display=swap"
+        rel="stylesheet">
+    <style>
+        /* Apply Sarabun font for Thai text, Inter for others */
+        body {
+            font-family: 'Sarabun', 'Inter', sans-serif;
+            background-color: #f0f4f8;
+            /* bg-slate-100 */
+        }
+
+        /* --- Base Styles --- */
+        .validation-message {
+            color: #e53e3e;
+            /* Red-600 */
+            font-size: 0.875rem;
+            /* text-sm */
+            margin-top: 0.25rem;
+            /* mt-1 */
+            min-height: 1.25rem;
+            /* Ensure space even when empty */
+            display: flex;
+            align-items: center;
+        }
+
+        .validation-message>[data-lucide] {
+            margin-right: 0.25rem;
+            /* mr-1 */
+            width: 1rem;
+            /* w-4 */
+            height: 1rem;
+            /* h-4 */
+            flex-shrink: 0;
+        }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 140px;
+            background-color: #555;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 10;
+            bottom: 150%;
+            left: 50%;
+            margin-left: -70px;
+            /* Center the tooltip */
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.75rem;
+            /* text-xs */
+        }
+
+        .tooltip .tooltiptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #555 transparent transparent transparent;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        [data-lucide] {
+            width: 1em;
+            height: 1em;
+            display: inline-block;
+            vertical-align: middle;
+            flex-shrink: 0;
+        }
+
+        /* --- Custom File Input --- */
+        .custom-file-input::-webkit-file-upload-button {
+            visibility: hidden;
+            display: none;
+        }
+
+        .custom-file-input::before {
+            content: 'เลือกไฟล์';
+            display: inline-block;
+            background: #4CAF50;
+            /* Green */
+            color: white;
+            border-radius: 0.375rem;
+            /* rounded-md */
+            padding: 0.5rem 1rem;
+            /* py-2 px-4 */
+            outline: none;
+            white-space: nowrap;
+            cursor: pointer;
+            font-weight: 500;
+            /* font-medium */
+            font-size: 0.875rem;
+            /* text-sm */
+            transition: background-color 0.3s ease;
+        }
+
+        .custom-file-input:hover::before {
+            background-color: #45a049;
+        }
+
+        .custom-file-input:active::before {
+            background-color: #388e3c;
+        }
+
+        .custom-file-input:focus::before {
+            /* Focus handled by container */
+        }
+
+        .file-input-container {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            /* gap-3 */
+            border: 1px solid #d1d5db;
+            /* border-gray-300 */
+            padding: 0.25rem 0.25rem 0.25rem 0.5rem;
+            /* Adjust padding */
+            border-radius: 0.375rem;
+            /* rounded-md */
+            cursor: pointer;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            background-color: white;
+            /* Ensure background for contrast */
+        }
+
+        .file-input-container:has(input:focus) {
+            border-color: #4CAF50;
+            /* Green border */
+            box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.3);
+            /* Green ring */
+        }
+
+        .file-name {
+            font-size: 0.875rem;
+            /* text-sm */
+            color: #4a5568;
+            /* text-gray-700 */
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            flex-grow: 1;
+            padding-left: 0.5rem;
+            /* Add some space before filename */
+        }
+
+        /* --- QR Code --- */
+        #promptpay-qr-code {
+            width: 180px;
+            /* Fixed size */
+            height: 180px;
+            /* Fixed size */
+            margin: 0 auto 0.5rem auto;
+            /* Center horizontally */
+            border: 1px solid #e2e8f0;
+            /* border-slate-200 */
+            padding: 5px;
+            /* Small padding around QR */
+            background-color: white;
+            display: flex;
+            /* Use flexbox for centering */
+            align-items: center;
+            justify-content: center;
+        }
+
+        #promptpay-qr-code img {
+            display: block;
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: contain;
+        }
+
+        /* --- Fade Transitions --- */
+        .fade-enter-active,
+        .fade-leave-active {
+            transition: opacity 0.3s ease;
+        }
+
+        .fade-enter-from,
+        .fade-leave-to {
+            opacity: 0;
+        }
+
+        /* --- Receipt Styling --- */
+        #receipt-box {
+            background-color: transparent;
+            border: none;
+            box-shadow: none;
+            padding: 0;
+            max-width: 420px;
+            /* Slightly wider */
+            margin-left: auto;
+            margin-right: auto;
+            opacity: 0;
+            /* Hidden initially */
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        #receipt-box.visible {
+            /* Added class for visibility control */
+            opacity: 1;
+        }
+
+        .receipt-paper {
+            font-family: 'Courier Prime', monospace;
+            /* Monospace font for receipt */
+            background-color: #fffff8;
+            /* Off-white paper color */
+            padding: 1.5rem 1.75rem;
+            /* Increased padding slightly */
+            border-radius: 5px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1), 0 2px 5px rgba(0, 0, 0, 0.08);
+            /* Enhanced shadow */
+            margin: 2rem auto 0;
+            /* mt-8, centered */
+            position: relative;
+            overflow: hidden;
+            /* Hide torn edge overflow */
+            animation: slideUpFadeIn 0.6s ease-out forwards;
+            /* Removed opacity/transform from here, handled by #receipt-box */
+        }
+
+        /* **** NEW: Receipt Header **** */
+        .receipt-header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            /* Increased space */
+            border-bottom: 1px solid #eee;
+            padding-bottom: 1rem;
+        }
+
+        .receipt-header h2 {
+            font-family: 'Sarabun', 'Inter', sans-serif;
+            /* Use standard font for header */
+            font-size: 1.25rem;
+            /* text-xl */
+            font-weight: 600;
+            /* font-semibold */
+            color: #1e3a8a;
+            /* blue-800 */
+            margin-bottom: 0.25rem;
+        }
+
+        .receipt-header p {
+            font-size: 0.8rem;
+            color: #6b7280;
+            /* gray-500 */
+        }
+
+        /* **** END NEW **** */
+
+
+        #receipt-content {
+            font-size: 0.9rem;
+            color: #333;
+            /* Removed border/padding from here, handled by lines/dividers */
+            margin-bottom: 1rem;
+            /* mb-4 */
+        }
+
+        #receipt-content .receipt-line {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            /* Increased spacing slightly */
+            line-height: 1.5;
+            /* Improved readability */
+        }
+
+        #receipt-content .receipt-line span:first-child {
+            color: #555;
+            padding-right: 1rem;
+            /* Space between label and value */
+            flex-shrink: 0;
+            /* Prevent label from shrinking */
+        }
+
+        #receipt-content .receipt-line span:last-child {
+            text-align: right;
+            font-weight: normal;
+            /* Default weight for values */
+            word-break: break-all;
+            /* Break long words like ref */
+        }
+
+        #receipt-content .receipt-total {
+            font-weight: 700;
+            /* Bold */
+            font-size: 1.1rem;
+            /* Slightly larger */
+            color: #000;
+            margin-top: 1rem;
+            /* Add space before total */
+            padding-top: 0.75rem;
+            /* Add padding above total */
+            border-top: 1px dashed #aaa;
+            /* Dashed line above total */
+        }
+
+        #receipt-content .receipt-ref {
+            font-weight: 700;
+            /* Bold */
+            color: #1d4ed8;
+            /* blue-700 */
+            background-color: #eff6ff;
+            /* blue-50 */
+            padding: 0.1rem 0.4rem;
+            border-radius: 3px;
+            font-size: 0.85rem;
+            /* Slightly smaller ref */
+        }
+
+        #receipt-content .receipt-status {
+            text-align: center;
+            font-weight: 700;
+            /* Bold */
+            color: #16a34a;
+            /* Green-600 */
+            margin-top: 1.5rem;
+            /* Increased space */
+            font-size: 1rem;
+            letter-spacing: 1px;
+            padding: 0.5rem;
+            background-color: #f0fdf4;
+            /* green-50 */
+            border: 1px solid #bbf7d0;
+            /* green-200 */
+            border-radius: 4px;
+        }
+
+        #receipt-content hr.receipt-divider {
+            border: none;
+            border-top: 1px dashed #ccc;
+            margin: 1rem 0;
+            /* Increased margin */
+        }
+
+        .torn-edge {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 25px;
+            /* Height of the effect */
+            background: linear-gradient(to right bottom, transparent 50%, #fffff8 50%) 0 0 / 10px 10px repeat-x,
+                linear-gradient(to left bottom, transparent 50%, #fffff8 50%) 0 0 / 10px 10px repeat-x;
+            background-color: #f0f4f8;
+            /* Match body background */
+            mask: linear-gradient(-135deg, transparent 7px, white 7px) 0 0,
+                linear-gradient(135deg, transparent 7px, white 7px) 0 0;
+            mask-size: 14px 14px;
+            mask-position: -7px 0;
+        }
+
+        @keyframes slideUpFadeIn {
+            to {
+                /* Animation now handled by #receipt-box visibility */
+            }
+        }
+
+        /* **** UPDATED: Receipt Storage Note / Reminder **** */
+        #receipt-reminder-note {
+            /* Renamed ID for clarity */
+            font-family: 'Sarabun', 'Inter', sans-serif;
+            /* Use default font */
+            font-size: 0.9rem;
+            /* Increased size */
+            color: #1e40af;
+            /* blue-800 */
+            text-align: center;
+            margin-top: 1.5rem;
+            /* mt-6 Increased space */
+            padding: 1rem;
+            /* p-4 Increased padding */
+            background-color: #e0f2fe;
+            /* sky-100 */
+            border: 1px solid #7dd3fc;
+            /* sky-300 */
+            border-radius: 0.5rem;
+            /* rounded-lg */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        #receipt-reminder-note [data-lucide] {
+            width: 1.1rem;
+            height: 1.1rem;
+            margin-right: 0.5rem;
+            /* mr-2 */
+            vertical-align: text-bottom;
+            color: #0369a1;
+            /* sky-700 */
+        }
+
+        #receipt-reminder-note strong {
+            color: #0c4a6e;
+            /* sky-900 */
+        }
+
+        /* **** END UPDATE **** */
+
+
+        #receipt-buttons {
+            margin-top: 1.5rem;
+            /* Increased space */
+            padding: 0 0 1.5rem;
+            /* Remove horizontal padding, keep bottom */
+        }
+
+        /* Style for save button during saving */
+        #save-receipt-btn.saving {
+            opacity: 0.7;
+            cursor: wait;
+        }
+
+
+        #selected-tier-info {
+            font-size: 0.875rem;
+            /* text-sm */
+            color: #1d4ed8;
+            /* blue-700 */
+            background-color: #eff6ff;
+            /* blue-50 */
+            border: 1px solid #bfdbfe;
+            /* blue-200 */
+            padding: 0.5rem 0.75rem;
+            /* py-2 px-3 */
+            border-radius: 0.375rem;
+            /* rounded-md */
+            margin-top: -0.5rem;
+            /* Pull it closer to guest input */
+            margin-bottom: 1rem;
+            /* mb-4 */
+            text-align: center;
+            transition: opacity 0.3s ease, transform 0.3s ease, height 0.3s ease;
+            /* Added height transition */
+            opacity: 0;
+            /* Hidden by default */
+            transform: translateY(-10px);
+            height: 0;
+            /* Collapse when hidden */
+            overflow: hidden;
+        }
+
+        #selected-tier-info.visible {
+            opacity: 1;
+            transform: translateY(0);
+            height: auto;
+            /* Expand to content height */
+            margin-top: -0.5rem;
+            /* Keep negative margin */
+            margin-bottom: 1rem;
+            /* Keep bottom margin */
+        }
+
+        /* Loading spinner */
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 24px;
+            /* Smaller spinner */
+            height: 24px;
+            border-radius: 50%;
+            border-left-color: #09f;
+            /* Blue */
+            animation: spin 1s ease infinite;
+            display: inline-block;
+            /* Make it inline */
+            vertical-align: middle;
+            /* Align with text */
+            margin-right: 0.5rem;
+            /* Add space */
+        }
+
+        /* Spinner variant for buttons */
+        button .spinner {
+            border-left-color: #fff;
+            /* White spinner on dark buttons */
+            width: 20px;
+            height: 20px;
+            border-width: 3px;
+            margin-right: 0.5rem;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Simple alert box */
+        .alert-box {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 1rem 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            transform: translateX(-50%) translateY(-20px);
+            max-width: 90%;
+            /* Ensure it fits on small screens */
+        }
+
+        .alert-box.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .alert-box-success {
+            background-color: #dcfce7;
+            /* green-100 */
+            color: #166534;
+            /* green-800 */
+            border: 1px solid #86efac;
+            /* green-300 */
+        }
+
+        .alert-box-error {
+            background-color: #fee2e2;
+            /* red-100 */
+            color: #991b1b;
+            /* red-800 */
+            border: 1px solid #fecaca;
+            /* red-300 */
+        }
+
+        .alert-box-info {
+            background-color: #e0f2fe;
+            /* sky-100 */
+            color: #075985;
+            /* sky-800 */
+            border: 1px solid #bae6fd;
+            /* sky-300 */
+        }
+
+        .alert-box [data-lucide] {
+            margin-right: 0.5rem;
+            flex-shrink: 0;
+            /* Prevent icon shrinking */
+        }
+
+        .alert-box-close {
+            margin-left: 1rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: inherit;
+            opacity: 0.7;
+            padding: 0.25rem;
+            /* Easier to click */
+            line-height: 1;
+            /* Prevent extra height */
+        }
+
+        .alert-box-close:hover {
+            opacity: 1;
+        }
+    </style>
+</head>
+
+<body class="antialiased text-gray-800">
+    <div class="container mx-auto px-4 py-8 max-w-2xl">
+
+        <h1 class="text-3xl font-bold text-center mb-8 text-green-600 flex items-center justify-center">
+            <span data-lucide="tent" class="w-8 h-8 mr-2"></span>ชำระเงิน
+        </h1>
+
+        <div id="payment-section"
+            class="bg-white p-6 md:p-8 rounded-xl shadow-lg transition-opacity duration-300 ease-in-out">
+            <h2 class="text-xl font-semibold mb-6 border-b pb-3 text-gray-700">ข้อมูลการจอง</h2>
+            <div id="user-greeting" class="mb-4 text-sm text-gray-600"></div>
+            <div class="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+                <p class="font-medium text-gray-700"><strong>ที่พัก:</strong> <span
+                        id="accommodation-name">กำลังโหลด...</span></p>
+            </div>
+            <div class="mb-4">
+                <label for="number-of-guests"
+                    class="block text-sm font-medium text-gray-700 mb-1">จำนวนผู้เข้าพัก:</label>
+                <input type="number" id="number-of-guests" name="number_of_guests" min="1" required
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition duration-150 ease-in-out"
+                    placeholder="ระบุจำนวนคน">
+                <p id="guest-validation" class="validation-message"></p>
+            </div>
+            <div id="selected-tier-info">
+                กำลังคำนวณประเภทห้องพัก...
+            </div>
+
+            <div class="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg text-center">
+                <p class="text-lg font-semibold text-blue-800">ยอดรวมที่ต้องชำระ:</p>
+                <p id="total-price" class="text-2xl font-bold text-blue-900">0 บาท</p>
+                <p class="text-xs text-gray-500 mt-1">(คำนวณตามจำนวนผู้เข้าพักและประเภทห้อง)</p>
+            </div>
+
+            <h2 class="text-xl font-semibold mb-4 border-b pb-3 text-gray-700">เลือกวิธีการชำระเงิน</h2>
+            <div class="mb-4">
+                <label for="payment-method"
+                    class="block text-sm font-medium text-gray-700 mb-1">วิธีการชำระเงิน:</label>
+                <select id="payment-method" name="payment_method" required
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition duration-150 ease-in-out bg-white">
+                    <option value="" selected disabled>-- กรุณาเลือก --</option>
+                    <option value="bank">โอนผ่านบัญชีธนาคาร</option>
+                    <option value="promptpay">สแกน QR พร้อมเพย์</option>
+                </select>
+                <p id="method-validation" class="validation-message"></p>
+            </div>
+
+            <div id="payment-method-details"
+                class="mb-6 min-h-[250px] transition-opacity duration-300 ease-in-out opacity-0 flex items-center justify-center p-4 border border-gray-200 rounded-lg bg-gray-50">
+                <p class="text-gray-400 text-sm italic">กรุณาเลือกวิธีการชำระเงินด้านบน</p>
+            </div>
+
+            <div id="upload-section" class="mb-6 p-4 border border-dashed border-gray-300 rounded-lg bg-gray-50 hidden">
+                <label for="payment-receipt"
+                    class="block text-sm font-medium text-gray-700 mb-2">แนบหลักฐานการชำระเงิน:</label>
+                <label class="file-input-container block w-full">
+                    <input type="file" id="payment-receipt" name="payment_receipt"
+                        accept="image/png, image/jpeg, image/gif, application/pdf" required
+                        class="custom-file-input absolute w-[1px] h-[1px] opacity-0 overflow-hidden">
+                    <span id="file-name-display" class="file-name">ยังไม่ได้เลือกไฟล์</span>
+                </label>
+                <p id="file-validation" class="validation-message"></p>
+            </div>
+
+            <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <button type="button" id="submit-payment"
+                    class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300 ease-in-out flex items-center justify-center shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled>
+                    <span data-lucide="check-circle" class="mr-2"></span>ยืนยันการชำระเงิน
+                </button>
+                <button type="button" onclick="goBackOrHome();"
+                    class="w-full bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-4 rounded-lg transition duration-300 ease-in-out flex items-center justify-center shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2">
+                    <span data-lucide="x-circle" class="mr-2"></span>ยกเลิก
+                </button>
+            </div>
+        </div>
+
+        <div id="receipt-box" class="">
+            <div class="receipt-paper" id="receipt-paper-content">
+                <div class="receipt-header">
+                    <h2><span data-lucide="receipt-text" class="inline-block mr-2"></span>ใบเสร็จรับเงิน / หลักฐานการจอง
+                    </h2>
+                    <p>บริษัท แคมป์ปิ้งสุขใจ จำกัด (สำนักงานใหญ่)</p>
+                </div>
+                <div id="receipt-content">
+                </div>
+                <div class="torn-edge"></div>
+            </div>
+
+            <div id="receipt-reminder-note">
+            </div>
+            <div id="receipt-buttons" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <button type="button" id="save-receipt-btn"
+                    class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300 ease-in-out flex items-center justify-center shadow focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                    <span data-lucide="download" class="mr-2"></span>บันทึกใบเสร็จ (รูปภาพ)
+                </button>
+                <button type="button" onclick="window.location.href='home.html';"
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300 ease-in-out flex items-center justify-center shadow focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                    <span data-lucide="home" class="mr-2"></span>กลับสู่หน้าหลัก
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="alert-container"></div>
+
+    <script>
+        function saveBookingData(bookingData) {
+  // ตรวจสอบว่า bookingData ถูกต้องหรือไม่
+  if (!bookingData) {
+    console.error("ข้อมูลการจองไม่ถูกต้อง");
+    return; // หรือ throw new Error("ข้อมูลการจองไม่ถูกต้อง");
+  }
+
+  // จำลองการบันทึกลงในฐานข้อมูลหรือที่เก็บข้อมูลอื่น ๆ
+  try {
+    // ในตัวอย่างนี้ เราจะใช้ localStorage ในการจัดเก็บข้อมูล
+    const bookingDataString = JSON.stringify(bookingData); // แปลง Object เป็น String
+    localStorage.setItem('bookingData', bookingDataString); // บันทึกลงใน localStorage
+
+    console.log("บันทึกข้อมูลการจองเรียบร้อยแล้ว:", bookingData);
+    // คุณอาจต้องการแสดงข้อความแจ้งเตือนผู้ใช้ หรือทำอย่างอื่นต่อ เช่น:
+    // alert("บันทึกข้อมูลการจองเรียบร้อยแล้ว!");
+  } catch (error) {
+    console.error("เกิดข้อผิดพลาดในการบันทึกข้อมูลการจอง:", error);
+    // จัดการข้อผิดพลาดที่นี่ เช่น แสดงข้อความให้ผู้ใช้ทราบ
+    // alert("เกิดข้อผิดพลาดในการบันทึกข้อมูลการจอง โปรดลองใหม่อีกครั้ง");
+  }
+}
+
+// ตัวอย่างการใช้งาน:
+const sampleBookingData = {
+  customerName: "สมชาย ใจดี",
+  roomType: "Deluxe",
+  checkInDate: "2024-03-15",
+  checkOutDate: "2024-03-17",
+  numberOfGuests: 2,
+  totalPrice: 2500,
+  paymentMethod: "Credit Card"
+};
+
+saveBookingData(sampleBookingData); // เรียกใช้ฟังก์ชันเพื่อบันทึกข้อมูลการจอง
+
+// --- Full Accommodation Data ---
+const allAccommodationsData = [
+        // ... (Accommodation data remains the same as before) ...
+        { id: 1, name: 'Hintok River Camp at Hellfire Pass กาญจนบุรี', description: '...', image: '...', priceTiers: [{ price: 1500, name: 'Standard Tent', features: ['<i class="fa-solid fa-fan"></i> พัดลม', '<i class="fa-solid fa-restroom"></i> ห้องน้ำรวม'] }, { price: 2000, name: 'Deluxe Tent', features: ['<i class="fa-solid fa-snowflake"></i> แอร์', '<i class="fa-solid fa-shower"></i> ห้องน้ำในตัว', '<i class="fa-solid fa-tree"></i> วิวสวน'] }, { price: 2500, name: 'Luxury Tent', features: ['<i class="fa-solid fa-snowflake"></i> แอร์', '<i class="fa-solid fa-shower"></i> ห้องน้ำในตัว', '<i class="fa-solid fa-water"></i> วิวแม่น้ำ', '<i class="fa-solid fa-mug-saucer"></i> อาหารเช้า'] }] },
+        { id: 2, name: 'Lalamukha Tented Resort เขาใหญ่', description: '...', image: '...', priceTiers: [{ price: 2000, name: 'Eco Tent', features: ['<i class="fa-solid fa-fan"></i> พัดลม', '<i class="fa-solid fa-shower"></i> ห้องน้ำในตัว'] }, { price: 2500, name: 'Deluxe Tent', features: ['<i class="fa-solid fa-snowflake"></i> แอร์', '<i class="fa-solid fa-shower"></i> ห้องน้ำในตัว', '<i class="fa-solid fa-mountain-sun"></i> วิวภูเขา'] }, { price: 3000, name: 'Safari Suite', features: ['<i class="fa-solid fa-snowflake"></i> แอร์', '<i class="fa-solid fa-bath"></i> อ่างอาบน้ำ', '<i class="fa-solid fa-mountain-sun"></i> วิวภูเขาส่วนตัว', '<i class="fa-solid fa-champagne-glasses"></i> Welcome Drink'] }] },
+        { id: 3, name: 'Mont Blanc Glamping Khao Yai เขาใหญ่', description: '...', image: '...', priceTiers: [{ price: 1800, name: 'Garden View Tent', features: ['<i class="fa-solid fa-snowflake"></i> แอร์', '<i class="fa-solid fa-shower"></i> ห้องน้ำในตัว', '<i class="fa-solid fa-seedling"></i> วิวสวน'] }, { price: 2200, name: 'Mountain View Tent', features: ['<i class="fa-solid fa-snowflake"></i> แอร์', '<i class="fa-solid fa-shower"></i> ห้องน้ำในตัว', '<i class="fa-solid fa-mountain"></i> วิวภูเขา'] }, { price: 2600, name: 'Panoramic Suite Tent', features: ['<i class="fa-solid fa-snowflake"></i> แอร์', '<i class="fa-solid fa-shower"></i> ห้องน้ำในตัว', '<i class="fa-solid fa-binoculars"></i> วิวพาโนรามา', '<i class="fa-solid fa-mug-saucer"></i> อาหารเช้า'] }] },
+        { id: 4, name: 'Jumptla Campiness นครปฐม', description: '...', image: '...', priceTiers: [{ price: 1200, name: 'River Breeze Tent', features: ['<i class="fa-solid fa-fan"></i> พัดลม', '<i class="fa-solid fa-restroom"></i> ห้องน้ำรวม', '<i class="fa-solid fa-water"></i> ใกล้แม่น้ำ'] }, { price: 1500, name: 'Cozy Tent', features: ['<i class="fa-solid fa-fan"></i> พัดลม', '<i class="fa-solid fa-shower"></i> ห้องน้ำในตัว'] }, { price: 1800, name: 'Riverside Tent AC', features: ['<i class="fa-solid fa-snowflake"></i> แอร์', '<i class="fa-solid fa-shower"></i> ห้องน้ำในตัว', '<i class="fa-solid fa-water"></i> ริมแม่น้ำ'] }] },
+        { id: 9, name: 'Te Mata Glamping เขาใหญ่', description: '...', image: '...', priceTiers: [{ price: 8100, name: 'Grand Villa Tent', features: ['<i class="fa-solid fa-snowflake"></i> แอร์', '<i class="fa-solid fa-bath"></i> อ่างจากุซซี่ส่วนตัว', '<i class="fa-solid fa-tv"></i> Smart TV', '<i class="fa-solid fa-utensils"></i> ครัวขนาดเล็ก'] }, { price: 9000, name: 'Pool Villa Tent', features: ['<i class="fa-solid fa-snowflake"></i> แอร์', '<i class="fa-solid fa-bath"></i> อ่างจากุซซี่', '<i class="fa-solid fa-person-swimming"></i> สระส่วนตัว', '<i class="fa-solid fa-wine-glass"></i> มินิบาร์'] }, { price: 9900, name: 'Royal Suite Tent', features: ['<i class="fa-solid fa-snowflake"></i> แอร์', '<i class="fa-solid fa-bath"></i> อ่างจากุซซี่', '<i class="fa-solid fa-person-swimming"></i> สระว่ายน้ำส่วนตัวขนาดใหญ่', '<i class="fa-solid fa-bell-concierge"></i> บริการ Butler'] }] },
+        { id: 5, name: 'River Tales เพชรบุรี', description: '...', image: '...', priceTiers: [{ price: 1700, name: 'Garden Camp', features: ['<i class="fa-solid fa-fan"></i> พัดลม', '<i class="fa-solid fa-restroom"></i> ห้องน้ำรวม'] }, { price: 2100, name: 'Sweet Camp', features: ['<i class="fa-solid fa-snowflake"></i> แอร์', '<i class="fa-solid fa-shower"></i> ห้องน้ำในตัว'] }, { price: 2400, name: 'Onsen Camp', features: ['<i class="fa-solid fa-snowflake"></i> แอร์', '<i class="fa-solid fa-shower"></i> ห้องน้ำในตัว', '<i class="fa-solid fa-hot-tub-person"></i> ออนเซ็นส่วนตัว'] }] },
+        { id: 6, name: 'Social Camp ราชบุรี', description: '...', image: '...', priceTiers: [{ price: 1900, name: 'Lotus View Tent', features: ['<i class="fa-solid fa-snowflake"></i> แอร์', '<i class="fa-solid fa-restroom"></i> ห้องน้ำรวม', '<i class="fa-solid fa-leaf"></i> วิวบึงบัว'] }, { price: 2300, name: 'Field View Tent AC', features: ['<i class="fa-solid fa-snowflake"></i> แอร์', '<i class="fa-solid fa-shower"></i> ห้องน้ำในตัว', '<i class="fa-solid fa-tractor"></i> วิวทุ่งนา'] }, { price: 2700, name: 'Private Zone Tent', features: ['<i class="fa-solid fa-snowflake"></i> แอร์', '<i class="fa-solid fa-shower"></i> ห้องน้ำในตัว', '<i class="fa-solid fa-shield-halved"></i> พื้นที่ส่วนตัว'] }] },
+        { id: 7, name: 'Slow Life Camping สัตหีบ', description: '...', image: '...', priceTiers: [{ price: 1100, name: 'Beach Dome (Fan)', features: ['<i class="fa-solid fa-fan"></i> พัดลม', '<i class="fa-solid fa-restroom"></i> ห้องน้ำรวม', '<i class="fa-solid fa-umbrella-beach"></i> ริมหาด'] }, { price: 1400, name: 'Large Beach Dome', features: ['<i class="fa-solid fa-fan"></i> พัดลม', '<i class="fa-solid fa-restroom"></i> ห้องน้ำรวม', '<i class="fa-solid fa-maximize"></i> ขนาดใหญ่'] }, { price: 1700, name: 'Sea View Dome AC', features: ['<i class="fa-solid fa-snowflake"></i> แอร์', '<i class="fa-solid fa-shower"></i> ห้องน้ำในตัว', '<i class="fa-solid fa-water"></i> วิวทะเล'] }] },
+        { id: 8, name: 'The Birder’s Lodge เขาใหญ่', description: '...', image: '...', priceTiers: [{ price: 1600, name: 'Lodge Tent', features: ['<i class="fa-solid fa-fan"></i> พัดลม', '<i class="fa-solid fa-restroom"></i> ห้องน้ำรวม'] }, { price: 2000, name: 'Cabin Tent', features: ['<i class="fa-solid fa-snowflake"></i> แอร์', '<i class="fa-solid fa-shower"></i> ห้องน้ำในตัว'] }, { price: 2300, name: 'Suite Lodge Tent', features: ['<i class="fa-solid fa-snowflake"></i> แอร์', '<i class="fa-solid fa-shower"></i> ห้องน้ำในตัว', '<i class="fa-solid fa-couch"></i> พื้นที่นั่งเล่น'] }] },
+    ];
+
+    // --- Constants and Global Variables ---
+    const urlParams = new URLSearchParams(window.location.search);
+    const accommodationIdParam = urlParams.get('id');
+    let selectedAccommodation = null;
+    let currentAccommodationTiers = [];
+    let MAX_GUESTS_ALLOWED = 1;
+    let currentUser = null;
+    let qrCodeInstance = null;
+    let isFormValid = { guests: false, method: false, file: false };
+    let currentBookingRef = null;
+    let currentSelectedTier = null;
+    let currentTotalPrice = 0;
+    let lastBookingData = null; // Store the data of the completed booking
+
+    // --- Mock Data ---
+    const bankDetails = { accountName: "บริษัท แคมป์ปิ้งสุขใจ จำกัด", accountNumber: "123-4-56789-0", bankName: "ธนาคารกรุงเทพ" };
+    const promptpayDetails = { id: "081-234-5678" };
+
+    // --- DOM Element References ---
+    const nameElement = document.getElementById('accommodation-name');
+    const guestsInput = document.getElementById('number-of-guests');
+    const totalPriceElement = document.getElementById('total-price');
+    const paymentMethodSelect = document.getElementById('payment-method');
+    const paymentDetailsContainer = document.getElementById('payment-method-details');
+    const uploadSection = document.getElementById('upload-section');
+    const receiptInput = document.getElementById('payment-receipt');
+    const fileNameDisplay = document.getElementById('file-name-display');
+    const submitButton = document.getElementById('submit-payment');
+    const paymentSection = document.getElementById('payment-section');
+    const receiptBox = document.getElementById('receipt-box');
+    const receiptPaperContent = document.getElementById('receipt-paper-content'); // Target for html2canvas
+    const receiptContent = document.getElementById('receipt-content');
+    const userGreetingElement = document.getElementById('user-greeting');
+    const saveReceiptButton = document.getElementById('save-receipt-btn');
+    const guestValidationMsg = document.getElementById('guest-validation');
+    const methodValidationMsg = document.getElementById('method-validation');
+    const fileValidationMsg = document.getElementById('file-validation');
+    const receiptReminderNote = document.getElementById('receipt-reminder-note'); // Updated ID
+    const selectedTierInfoElement = document.getElementById('selected-tier-info');
+    const alertContainer = document.getElementById('alert-container');
+
+    // --- Guest-to-Tier Mapping Logic ---
+    const guestToTierIndexMap = (guestCount) => {
+        if (!guestCount || guestCount <= 0) return -1;
+        if (guestCount >= 1 && guestCount <= 2) return 0;
+        if (guestCount >= 3 && guestCount <= 4) return 1;
+        if (guestCount >= 5 && guestCount <= 6) return 2;
+        return -1;
+    };
+
+    // --- Calculate Max Guests Allowed ---
+    const calculateMaxGuests = (tiers) => {
+        if (!tiers || tiers.length === 0) return 0;
+        if (tiers.length >= 3 && guestToTierIndexMap(6) === 2) return 6;
+        if (tiers.length >= 2 && guestToTierIndexMap(4) === 1) return 4;
+        if (tiers.length >= 1 && guestToTierIndexMap(2) === 0) return 2;
+        return 0;
+    };
+
+    // --- Utility Functions ---
+    const formatCurrency = (amount) => {
+        // Ensure amount is a number before formatting
+        const numAmount = Number(amount);
+        if (isNaN(numAmount)) {
+            return 'N/A'; // Or some other placeholder for invalid numbers
+        }
+        return new Intl.NumberFormat('th-TH', { style: 'currency', currency: 'THB', minimumFractionDigits: 0 }).format(numAmount);
+    };
+    const generateBookingReference = () => {
+        return `BK-${Date.now().toString().slice(-6)}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
+    };
+    const copyToClipboard = (text, element) => {
+        navigator.clipboard.writeText(text).then(() => {
+            showSimpleAlert(`คัดลอก "${text}" แล้ว!`, 'success', 2000);
+            if (element) {
+                const originalIcon = element.innerHTML;
+                element.innerHTML = `<span data-lucide="check" class="w-4 h-4 text-green-600"></span>`;
+                lucide.createIcons();
+                setTimeout(() => { element.innerHTML = originalIcon; lucide.createIcons(); }, 1500);
+            }
+        }).catch(err => {
+            console.error('Could not copy text: ', err);
+            showSimpleAlert('ไม่สามารถคัดลอกได้', 'error');
+        });
+    };
+    const showSimpleAlert = (message, type = 'info', duration = 3000) => {
+        const alertId = `alert-${Date.now()}`;
+        const alertDiv = document.createElement('div');
+        alertDiv.id = alertId;
+        alertDiv.className = `alert-box alert-box-${type}`;
+        let icon = 'info';
+        if (type === 'success') icon = 'check-circle';
+        if (type === 'error') icon = 'alert-circle';
+        alertDiv.innerHTML = `
+            <span data-lucide="${icon}"></span>
+            <span>${message}</span>
+            <button class="alert-box-close" onclick="closeAlert('${alertId}')" aria-label="ปิด">&times;</button>
+        `;
+        alertContainer.appendChild(alertDiv);
+        lucide.createIcons();
+        requestAnimationFrame(() => { alertDiv.classList.add('show'); });
+        if (duration) { setTimeout(() => { closeAlert(alertId); }, duration); }
+    };
+    const closeAlert = (alertId) => {
+        const alertDiv = document.getElementById(alertId);
+        if (alertDiv) {
+            alertDiv.classList.remove('show');
+            alertDiv.addEventListener('transitionend', () => alertDiv.remove(), { once: true });
+            setTimeout(() => { if (alertDiv && alertDiv.parentNode) { alertDiv.remove(); } }, 500);
+        }
+    };
+    const showValidationMessage = (element, message) => {
+        element.innerHTML = `<span data-lucide="alert-circle"></span> ${message}`;
+        lucide.createIcons({ nodes: [element.querySelector('[data-lucide]')] });
+    };
+    const clearValidationMessage = (element) => { element.innerHTML = ''; };
+
+    // --- Event Handlers ---
+    function handleGuestInput() {
+        const guestCount = parseInt(guestsInput.value, 10);
+        let isValid = false;
+        currentSelectedTier = null;
+        currentTotalPrice = 0;
+        clearValidationMessage(guestValidationMsg);
+        selectedTierInfoElement.classList.remove('visible');
+
+        if (!guestCount || guestCount <= 0) {
+            showValidationMessage(guestValidationMsg, 'กรุณาระบุจำนวนผู้เข้าพัก');
+        } else if (guestCount > MAX_GUESTS_ALLOWED) {
+            showValidationMessage(guestValidationMsg, `รองรับผู้เข้าพักสูงสุด ${MAX_GUESTS_ALLOWED} คน`);
+        } else {
+            const tierIndex = guestToTierIndexMap(guestCount);
+            if (tierIndex !== -1 && tierIndex < currentAccommodationTiers.length) {
+                currentSelectedTier = currentAccommodationTiers[tierIndex];
+                currentTotalPrice = currentSelectedTier.price;
+                isValid = true;
+                selectedTierInfoElement.innerHTML = `
+                    <span data-lucide="check" class="inline-block w-4 h-4 mr-1"></span>
+                    เลือก: <strong>${currentSelectedTier.name}</strong> (${formatCurrency(currentTotalPrice)})
+                    <div class="text-xs mt-1 text-gray-600">${currentSelectedTier.features.join(' &bull; ')}</div>
+                `;
+                lucide.createIcons({ nodes: [selectedTierInfoElement.querySelector('[data-lucide]')] });
+                selectedTierInfoElement.classList.add('visible');
+            } else {
+                showValidationMessage(guestValidationMsg, 'ไม่พบประเภทห้องพักสำหรับจำนวนนี้');
+                selectedTierInfoElement.classList.remove('visible');
+            }
+        }
+        totalPriceElement.textContent = formatCurrency(currentTotalPrice);
+        isFormValid.guests = isValid;
+        updateSubmitButtonState();
+        // Regenerate QR if needed
+        if (paymentMethodSelect.value === 'promptpay') {
+            generateQRCode(currentTotalPrice);
+        }
+    }
+    function handlePaymentMethodChange() {
+        const selectedMethod = paymentMethodSelect.value;
+        isFormValid.method = !!selectedMethod;
+        clearValidationMessage(methodValidationMsg);
+        if (!selectedMethod) {
+            showValidationMessage(methodValidationMsg, 'กรุณาเลือกวิธีการชำระเงิน');
+        }
+        displayPaymentDetails(selectedMethod);
+        updateSubmitButtonState();
+    }
+    function handleFileSelect() {
+        const file = receiptInput.files[0];
+        let isValid = false;
+        clearValidationMessage(fileValidationMsg);
+        if (file) {
+            const allowedTypes = ['image/png', 'image/jpeg', 'image/gif', 'application/pdf'];
+            if (allowedTypes.includes(file.type)) {
+                fileNameDisplay.textContent = file.name;
+                fileNameDisplay.classList.remove('text-gray-400', 'italic', 'text-red-600');
+                isValid = true;
+            } else {
+                fileNameDisplay.textContent = 'ไฟล์ไม่ถูกต้อง (ต้องเป็น รูปภาพ หรือ PDF)';
+                fileNameDisplay.classList.add('text-red-600');
+                showValidationMessage(fileValidationMsg, 'รองรับเฉพาะไฟล์ PNG, JPG, GIF, PDF');
+            }
+        } else {
+            fileNameDisplay.textContent = 'ยังไม่ได้เลือกไฟล์';
+            fileNameDisplay.classList.add('text-gray-400', 'italic');
+            showValidationMessage(fileValidationMsg, 'กรุณาแนบหลักฐานการโอนเงิน');
+        }
+        isFormValid.file = isValid;
+        updateSubmitButtonState();
+    }
+    async function handleSubmitPayment() {
+        if (!isFormValid.guests || !isFormValid.method || (paymentMethodSelect.value === 'bank' && !isFormValid.file)) {
+            showSimpleAlert('กรุณากรอกข้อมูลให้ครบถ้วนและถูกต้อง', 'error');
+            return;
+        }
+        submitButton.disabled = true;
+        submitButton.innerHTML = '<span class="spinner"></span> กำลังดำเนินการ...';
+
+        await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate processing
+
+        currentBookingRef = generateBookingReference();
+        lastBookingData = { // Store data for receipt generation and saving
+            ref: currentBookingRef,
+            accommodationId: selectedAccommodation.id,
+            accommodationName: selectedAccommodation.name,
+            guestCount: parseInt(guestsInput.value, 10),
+            tierName: currentSelectedTier.name,
+            totalPrice: currentTotalPrice,
+            paymentMethod: paymentMethodSelect.options[paymentMethodSelect.selectedIndex].text,
+            paymentTimestamp: new Date().toISOString(),
+            user: currentUser ? currentUser.username : 'Guest',
+            receiptFileName: receiptInput.files[0]?.name || null
+        };
+
+        try {
+            const bookings = JSON.parse(localStorage.getItem('glampingBookings') || '[]');
+            bookings.push(lastBookingData);
+            localStorage.setItem('glampingBookings', JSON.stringify(bookings));
+
+            showSimpleAlert('การชำระเงินสำเร็จ!', 'success');
+
+            // Transition to receipt view
+            paymentSection.style.opacity = '0';
+            setTimeout(async () => { // Make async for auto-save
+                paymentSection.classList.add('hidden');
+                displayReceipt(lastBookingData); // Display the receipt first
+                receiptBox.classList.add('visible'); // Make receipt box visible
+
+                // **** ADDED: Attempt automatic save ****
+                try {
+                    await handleSaveReceipt(true); // Pass true for automatic mode
+                    showSimpleAlert('ใบเสร็จถูกบันทึกอัตโนมัติแล้ว', 'info', 4000);
+                } catch (saveError) {
+                    console.warn("Automatic receipt save failed:", saveError);
+                    showSimpleAlert('ไม่สามารถบันทึกใบเสร็จอัตโนมัติได้ กรุณากดปุ่มบันทึกอีกครั้ง', 'info', 5000);
+                }
+                // **** END ADDED ****
+
+            }, 300);
+
+        } catch (error) {
+            console.error("Error saving booking:", error);
+            showSimpleAlert('เกิดข้อผิดพลาดในการบันทึกข้อมูล', 'error');
+            submitButton.disabled = false;
+            submitButton.innerHTML = '<span data-lucide="check-circle" class="mr-2"></span>ยืนยันการชำระเงิน';
+            lucide.createIcons();
+        }
+    }
+
+    // **** UPDATED: handleSaveReceipt function ****
+    async function handleSaveReceipt(isAuto = false) { // Added isAuto flag
+        if (!lastBookingData || !receiptPaperContent) {
+            showSimpleAlert('ไม่พบข้อมูลใบเสร็จที่จะบันทึก', 'error');
+            return Promise.reject('Missing receipt data or element'); // Return a rejected promise for async handling
+        }
+
+        const buttonText = isAuto ? 'กำลังบันทึกอัตโนมัติ...' : 'กำลังบันทึก...';
+        const originalButtonContent = saveReceiptButton.innerHTML;
+
+        saveReceiptButton.disabled = true;
+        saveReceiptButton.classList.add('saving');
+        saveReceiptButton.innerHTML = `<span class="spinner"></span> ${buttonText}`;
+
+        try {
+            // Use html2canvas to capture the receipt element
+            const canvas = await html2canvas(receiptPaperContent, {
+                scale: 2, // Increase scale for better resolution
+                useCORS: true, // Important if using external images/fonts, though maybe not needed here
+                backgroundColor: '#fffff8' // Ensure background color is captured
+            });
+
+            // Convert canvas to PNG data URL
+            const imageDataUrl = canvas.toDataURL('image/png');
+
+            // Create a temporary link to trigger download
+            const link = document.createElement('a');
+            link.href = imageDataUrl;
+            // Create filename: ใบเสร็จ-REF-Date.png
+            const dateStr = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+            link.download = `ใบเสร็จ-${lastBookingData.ref}-${dateStr}.png`;
+
+            // Trigger downloaddocument.body.appendChild(link); // Required for Firefox
+            link.click();
+            document.body.removeChild(link);
+
+            if (!isAuto) { // Show success only for manual click
+                showSimpleAlert('บันทึกใบเสร็จเป็นรูปภาพ (PNG) สำเร็จ!', 'success');
+            }
+            saveReceiptButton.innerHTML = '<span data-lucide="check" class="mr-2"></span>บันทึกแล้ว';
+            lucide.createIcons();
+            // Keep button disabled briefly after success
+            setTimeout(() => {
+                saveReceiptButton.disabled = false;
+                saveReceiptButton.classList.remove('saving');
+                saveReceiptButton.innerHTML = originalButtonContent; // Restore original content
+                lucide.createIcons();
+            }, 2000);
+
+            return Promise.resolve(); // Indicate success
+
+        } catch (error) {
+            console.error("Error generating receipt image:", error);
+            showSimpleAlert('เกิดข้อผิดพลาดในการสร้างรูปภาพใบเสร็จ', 'error');
+            saveReceiptButton.disabled = false;
+            saveReceiptButton.classList.remove('saving');
+            saveReceiptButton.innerHTML = originalButtonContent; // Restore original content
+            lucide.createIcons();
+            return Promise.reject(error); // Indicate failure
+        }
+    }
+    // **** END UPDATE ****
+
+    // --- UI Update Functions ---
+    function displayPaymentDetails(method) {
+        paymentDetailsContainer.innerHTML = '';
+        paymentDetailsContainer.style.opacity = '0';
+        uploadSection.classList.add('hidden');
+        isFormValid.file = true; // Assume not needed unless bank
+
+        if (method === 'bank') {
+            paymentDetailsContainer.innerHTML = `
+                <div class="text-sm text-left w-full space-y-3">
+                    <p class="font-semibold text-gray-700">โอนเงินเข้าบัญชี:</p>
+                    <div class="flex justify-between items-center">
+                        <span>ชื่อบัญชี:</span>
+                        <span class="font-medium text-gray-900">${bankDetails.accountName}</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span>ธนาคาร:</span>
+                        <span class="font-medium text-gray-900">${bankDetails.bankName}</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span>เลขที่บัญชี:</span>
+                        <button class="font-mono font-semibold text-blue-600 flex items-center group" onclick="copyToClipboard('${bankDetails.accountNumber}', this)">
+                            ${bankDetails.accountNumber}
+                            <span data-lucide="copy" class="ml-2 w-4 h-4 text-gray-400 group-hover:text-blue-600"></span>
+                        </button>
+                    </div>
+                    <p class="text-xs text-red-600 mt-3 bg-red-50 p-2 rounded border border-red-200">
+                        <span data-lucide="alert-triangle" class="w-4 h-4 inline-block mr-1"></span>
+                        <strong>สำคัญ:</strong> กรุณาแนบหลักฐานการโอนเงินด้านล่างหลังจากทำการโอนเรียบร้อยแล้ว
+                    </p>
+                </div>`;
+            uploadSection.classList.remove('hidden');
+            isFormValid.file = !!receiptInput.files[0]; // Re-validate
+        } else if (method === 'promptpay') {
+            paymentDetailsContainer.innerHTML = `
+                <div class="text-center w-full">
+                    <p class="font-semibold text-gray-700 mb-2">สแกน QR Code ด้วยแอปธนาคาร:</p>
+                    <div id="promptpay-qr-code" class="mb-2 bg-white p-1 border rounded">
+                       <div class="spinner"></div>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-3">
+                        หรือโอนไปที่ PromptPay ID:
+                        <button class="font-mono font-semibold text-blue-600 inline-flex items-center group" onclick="copyToClipboard('${promptpayDetails.id}', this)">
+                            ${promptpayDetails.id}
+                            <span data-lucide="copy" class="ml-1 w-4 h-4 text-gray-400 group-hover:text-blue-600"></span>
+                        </button>
+                    </p>
+                    <p class="text-xs text-gray-500">(ไม่ต้องแนบสลิป)</p>
+                </div>`;
+            setTimeout(() => generateQRCode(currentTotalPrice), 50);
+        } else {
+            paymentDetailsContainer.innerHTML = '<p class="text-gray-400 text-sm italic">กรุณาเลือกวิธีการชำระเงินด้านบน</p>';
+        }
+        lucide.createIcons({ context: paymentDetailsContainer });
+        requestAnimationFrame(() => { paymentDetailsContainer.style.opacity = '1'; });
+        updateSubmitButtonState();
+    }
+    function generateQRCode(amount) {
+        const qrElement = document.getElementById('promptpay-qr-code');
+        if (!qrElement) return;
+        qrElement.innerHTML = ''; // Clear previous
+
+        if (amount <= 0 || !selectedAccommodation || isNaN(Number(amount))) { // Added NaN check
+            qrElement.innerHTML = '<p class="text-xs text-red-500 p-4">กรุณาระบุจำนวนผู้เข้าพัก<br>เพื่อสร้าง QR Code</p>';
+            return;
+        }
+        const PAYLOAD_FORMAT = '000201';
+        const POI_METHOD = '010212';
+        const MERCHANT_INFO_AID = '29370016A000000677010111';
+        const PROMPTPAY_ID = promptpayDetails.id.replace(/-/g, '');
+        const MERCHANT_INFO_TYPE = PROMPTPAY_ID.length >= 15 ? '03' : (PROMPTPAY_ID.length >= 13 ? '02' : '01');
+        const MERCHANT_INFO_ID = `${MERCHANT_INFO_TYPE}${PROMPTPAY_ID.length.toString().padStart(2, '0')}${PROMPTPAY_ID}`;
+        const MERCHANT_INFO = `${MERCHANT_INFO_AID}${MERCHANT_INFO_ID}`;
+        const COUNTRY_CODE = '5802TH';
+        const CURRENCY_CODE = '5303764';
+        const AMOUNT_STR = amount.toFixed(2); // Ensure 2 decimal places for calculation
+        const AMOUNT = `54${AMOUNT_STR.length.toString().padStart(2, '0')}${AMOUNT_STR}`;
+        let payload = `${PAYLOAD_FORMAT}${POI_METHOD}${MERCHANT_INFO}${COUNTRY_CODE}${CURRENCY_CODE}${AMOUNT}`;
+        function crc16(data) {
+            let crc = 0xFFFF;
+            for (let i = 0; i < data.length; i++) {
+                crc ^= data.charCodeAt(i) << 8;
+                for (let j = 0; j < 8; j++) {
+                    crc = (crc & 0x8000) ? (crc << 1) ^ 0x1021 : crc << 1;
+                }
+            }
+            return (crc & 0xFFFF).toString(16).toUpperCase().padStart(4, '0');
+        }
+        const CRC_FIELD = `6304${crc16(payload + '6304')}`;
+        payload += CRC_FIELD;
+
+        try {
+            qrCodeInstance = new QRCode(qrElement, {
+                text: payload,
+                width: 170, height: 170,
+                colorDark: "#000000", colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.M
+            });
+        } catch (error) {
+            console.error("Error generating QR Code:", error);
+            qrElement.innerHTML = '<p class="text-xs text-red-500 p-4">เกิดข้อผิดพลาดในการสร้าง QR Code</p>';
+        }
+    }
+    function updateSubmitButtonState() {
+        const isBankTransfer = paymentMethodSelect.value === 'bank';
+        const fileNeededAndValid = !isBankTransfer || (isBankTransfer && isFormValid.file);
+        submitButton.disabled = !(isFormValid.guests && isFormValid.method && fileNeededAndValid);
+    }
+    function displayReceipt(data) {
+        const paymentDate = new Date(data.paymentTimestamp);
+        const formattedDate = paymentDate.toLocaleDateString('th-TH', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false });
+
+        receiptContent.innerHTML = `
+            <div class="receipt-line"><span>วันที่ทำรายการ:</span> <span>${formattedDate} น.</span></div>
+            <div class="receipt-line"><span>เลขที่อ้างอิง:</span> <span class="receipt-ref">${data.ref}</span></div>
+            <hr class="receipt-divider">
+            <div class="receipt-line"><span>ผู้จอง:</span> <span>${data.user}</span></div>
+            <div class="receipt-line"><span>ที่พัก:</span> <span>${data.accommodationName}</span></div>
+            <div class="receipt-line"><span>ประเภท:</span> <span>${data.tierName}</span></div>
+            <div class="receipt-line"><span>จำนวนผู้เข้าพัก:</span> <span>${data.guestCount} คน</span></div>
+            <div class="receipt-line"><span>ชำระโดย:</span> <span>${data.paymentMethod}</span></div>
+            ${data.receiptFileName ? `<div class="receipt-line"><span>ไฟล์แนบ:</span> <span class="text-xs truncate" title="${data.receiptFileName}">${data.receiptFileName}</span></div>` : ''}
+            <div class="receipt-line receipt-total"><span>ยอดรวมสุทธิ:</span> <span>${formatCurrency(data.totalPrice)}</span></div>
+            <div class="receipt-status">*** ชำระเงินและยืนยันการจองเรียบร้อยแล้ว ***</div>
+        `;
+
+        // **** UPDATED: Reminder Note Content ****
+        receiptReminderNote.innerHTML = `
+            <span data-lucide="party-popper" class="inline-block"></span>
+            <strong>การจองสมบูรณ์!</strong> โปรดบันทึกใบเสร็จนี้ (หรือรูปภาพที่ดาวน์โหลด) และนำไปแสดง ณ ที่พักเพื่อยืนยันการเข้าพักของคุณ
+        `;
+        lucide.createIcons({ context: receiptReminderNote }); // Render icon
+    }
+
+    // --- Authentication and Initialization ---
+    function checkLoginStatus() {
+        const storedUser = localStorage.getItem('glampingUser');
+        if (storedUser) {
+            currentUser = JSON.parse(storedUser);
+            userGreetingElement.innerHTML = `<span data-lucide="user" class="inline-block w-4 h-4 mr-1"></span> ยินดีต้อนรับ, <strong>${currentUser.username}</strong>!`;
+            lucide.createIcons({ nodes: [userGreetingElement.querySelector('[data-lucide]')] });
+        } else {
+            userGreetingElement.textContent = 'กรุณาเข้าสู่ระบบเพื่อทำการจอง';
+        }
+    }
+
+    function initializePage() {
+        checkLoginStatus();
+        if (!accommodationIdParam) {
+            window.location.href = 'home.html';
+            return;
+        }
+
+        selectedAccommodation = allAccommodationsData.find(acc => acc.id === parseInt(accommodationIdParam, 10));
+        if (!selectedAccommodation) {
+            window.location.href = 'dashboard.html';
+            return;
+        }
+
+        currentAccommodationTiers = selectedAccommodation.priceTiers;
+        MAX_GUESTS_ALLOWED = calculateMaxGuests(currentAccommodationTiers);
+
+        nameElement.textContent = selectedAccommodation.name;
+        document.title = `จองที่พัก ${selectedAccommodation.name} - Glamping.com`;
+
+        guestsInput.addEventListener('input', handleGuestInput);
+        paymentMethodSelect.addEventListener('change', handlePaymentMethodChange);
+        receiptInput.addEventListener('change', handleFileSelect);
+        submitButton.addEventListener('click', handleSubmitPayment);
+        saveReceiptButton.addEventListener('click', handleSaveReceipt); // **** ADDED ****
+
+        displayPaymentDetails(paymentMethodSelect.value); // Initial display
+        handleGuestInput(); // Initial guest check
+    }
+
+    // --- Initialize ---
+    document.addEventListener('DOMContentLoaded', initializePage);
+    </script>
+</body>
+
+</html>

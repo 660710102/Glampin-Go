@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>เข้าสู่ระบบ - ยินดีต้อนรับ</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Prompt', sans-serif;
+      background: linear-gradient(-45deg, #e0fdf4, #d1fae5, #a7f3d0, #6ee7b7);
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    @keyframes gradientBG {
+      0% {
+        background-position: 0% 50%;
+      }
+
+      50% {
+        background-position: 100% 50%;
+      }
+
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+
+    .input-with-icon {
+      position: relative;
+    }
+
+    .input-with-icon i {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #9ca3af;
+      transition: color 0.3s ease;
+    }
+
+    .input-with-icon input {
+      padding-left: 36px;
+      border-radius: 0.5rem;
+      border: 1px solid #d1d5db;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      width: 100%;
+      padding-top: 0.75rem;
+      padding-bottom: 0.75rem;
+      /* py-3 */
+      color: #374151;
+    }
+
+    .input-with-icon input::placeholder {
+      color: #9ca3af;
+    }
+
+    .input-with-icon input:focus {
+      border-color: #10b981;
+      box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.3);
+      outline: none;
+    }
+
+    .input-with-icon input:focus+i {
+      color: #10b981;
+    }
+
+    .social-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.6rem 1rem;
+      border-radius: 0.5rem;
+      border: 1px solid #d1d5db;
+      margin: 0 0.25rem;
+      transition: all 0.3s ease;
+      font-size: 1.2rem;
+      color: #4b5563;
+      cursor: pointer;
+    }
+
+    .social-btn:hover {
+      border-color: #9ca3af;
+      background-color: #f9fafb;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    .social-btn.facebook:hover {
+      color: #1877F2;
+    }
+
+    .social-btn.google:hover {
+      color: #DB4437;
+    }
+
+    .social-btn.apple:hover {
+      color: #000000;
+    }
+
+    .social-btn.instagram:hover {
+      color: #E4405F;
+    }
+
+    .theme-toggle {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      cursor: pointer;
+      padding: 8px;
+      background-color: rgba(255, 255, 255, 0.5);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.3s ease;
+    }
+
+    .theme-toggle:hover {
+      background-color: rgba(255, 255, 255, 0.8);
+    }
+
+    /* Shake animation */
+    @keyframes shake {
+
+      0%,
+      100% {
+        transform: translateX(0);
+      }
+
+      10%,
+      30%,
+      50%,
+      70%,
+      90% {
+        transform: translateX(-5px);
+      }
+
+      20%,
+      40%,
+      60%,
+      80% {
+        transform: translateX(5px);
+      }
+    }
+
+    .animate-shake {
+      animation: shake 0.5s ease-in-out;
+    }
+
+    /* CSS สำหรับ Dark Mode (ตัวอย่าง - ต้อง Implement เพิ่ม) */
+    /*
+     body.dark { background: #111827; }
+     .dark .login-card { background-color: #1f2937; color: #e5e7eb; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2); }
+     .dark .input-with-icon input { background-color: #374151; border-color: #4b5563; color: #e5e7eb; }
+     .dark .input-with-icon input::placeholder { color: #9ca3af; }
+     .dark .input-with-icon i { color: #9ca3af; }
+     .dark .input-with-icon input:focus { border-color: #34d399; box-shadow: 0 0 0 2px rgba(52, 211, 153, 0.4); }
+     .dark .input-with-icon input:focus + i { color: #34d399; }
+     .dark .social-btn { border-color: #4b5563; color: #9ca3af; }
+     .dark .social-btn:hover { background-color: #4b5563; border-color: #6b7280;}
+     .dark .theme-toggle { background-color: rgba(0, 0, 0, 0.4); }
+     .dark .theme-toggle:hover { background-color: rgba(0, 0, 0, 0.6); }
+     .dark .text-gray-800 { color: #f3f4f6; }
+     .dark .text-gray-500 { color: #9ca3af; }
+     .dark .text-gray-600 { color: #d1d5db; }
+     .dark .border-b { border-color: #374151; }
+     .dark a { color: #34d399; }
+     .dark a:hover { color: #a7f3d0; }
+     .dark #error-message { color: #fca5a5; }
+     .dark #login-streak { color: #9ca3af; }
+     .dark #login-streak span { color: #34d399; }
+     */
+  </style>
+</head>
+
+<body>
+  <div class="theme-toggle" id="theme-toggle">
+    <i class="fas fa-sun text-yellow-500"></i>
+  </div>
+
+  <div class="bg-white p-8 md:p-12 rounded-xl shadow-2xl w-full max-w-md m-4 login-card">
+    <div class="text-center mb-8">
+      <i class="fas fa-seedling text-5xl text-green-600 mb-4"></i>
+      <h1 class="text-3xl font-bold text-gray-800">ยินดีต้อนรับ!</h1>
+      <p class="text-gray-500 mt-2">เข้าสู่ระบบเพื่อเริ่มต้นใช้งาน</p>
+    </div>
+
+    <form id="login-form">
+      <div class="mb-5">
+        <div class="input-with-icon">
+          <input type="text" id="username" name="username" required
+            class="w-full px-3 py-3 text-gray-700 placeholder-gray-400" placeholder="ชื่อผู้ใช้ หรือ อีเมล">
+          <i class="fas fa-user"></i>
+        </div>
+      </div>
+
+      <div class="mb-5">
+        <div class="input-with-icon">
+          <input type="password" id="password" name="password" required
+            class="w-full px-3 py-3 text-gray-700 placeholder-gray-400" placeholder="รหัสผ่าน">
+          <i class="fas fa-lock"></i>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between mb-6">
+        <label class="flex items-center text-sm text-gray-600">
+          <input type="checkbox" id="remember-me" name="remember-me"
+            class="form-checkbox h-4 w-4 text-green-600 rounded mr-2 focus:ring-green-500">
+          จำฉันไว้ในระบบ
+        </label>
+        <a href="#" class="text-sm text-green-600 hover:text-green-700 hover:underline font-medium">
+          ลืมรหัสผ่าน?
+        </a>
+      </div>
+
+      <button type="submit" id="login-button"
+        class="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white py-3 px-4 rounded-lg font-semibold hover:from-green-600 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition duration-300 ease-in-out transform hover:-translate-y-1 shadow-lg">
+        <i class="fas fa-sign-in-alt mr-2"></i>เข้าสู่ระบบ
+      </button>
+
+      <p id="error-message" class="text-red-500 text-sm mt-4 text-center h-5"></p>
+    </form>
+
+    <div class="my-6 flex items-center justify-center">
+      <span class="border-b w-1/5 lg:w-1/4"></span>
+      <span class="text-xs text-center text-gray-500 uppercase mx-3">หรือเข้าสู่ระบบด้วย</span>
+      <span class="border-b w-1/5 lg:w-1/4"></span>
+    </div>
+
+    <div class="flex justify-center space-x-3 mb-6">
+      <button aria-label="Login with Google" class="social-btn google" onclick="handleSocialLogin('google')">
+        <i class="fab fa-google"></i>
+      </button>
+      <button aria-label="Login with Facebook" class="social-btn facebook" onclick="handleSocialLogin('facebook')">
+        <i class="fab fa-facebook-f"></i>
+      </button>
+      <button aria-label="Login with Apple" class="social-btn apple" onclick="handleSocialLogin('apple')">
+        <i class="fab fa-apple"></i>
+      </button>
+      <button aria-label="Login with Instagram" class="social-btn instagram" onclick="handleSocialLogin('instagram')">
+        <i class="fab fa-instagram"></i>
+      </button>
+    </div>
+
+    <p class="text-center text-sm text-gray-600 mt-8">
+      ยังไม่มีบัญชี?
+      <a href="register.html" class="text-green-600 hover:text-green-700 hover:underline font-medium">
+        สมัครสมาชิกที่นี่
+      </a>
+    </p>
+
+    <div id="login-streak" class="text-center text-xs text-gray-400 mt-5 opacity-0 transition-opacity duration-500">
+      เข้าสู่ระบบติดต่อกัน <span id="streak-count" class="font-bold text-green-500">1</span> วันแล้ว! 🔥
+    </div>
+
+  </div>
+
+  <script>
+    // --- Get DOM Elements ---
+    const loginForm = document.getElementById('login-form');
+    const errorMessage = document.getElementById('error-message');
+    const usernameInput = document.getElementById('username');
+    const passwordInput = document.getElementById('password');
+    const rememberMeCheckbox = document.getElementById('remember-me');
+    const loginStreakDiv = document.getElementById('login-streak');
+    const streakCountSpan = document.getElementById('streak-count');
+    const themeToggle = document.getElementById('theme-toggle');
+    const loginButton = document.getElementById('login-button'); // Get login button
+
+    // --- Login Form Submit Handler ---
+    loginForm.addEventListener('submit', (event) => {
+      event.preventDefault(); // Prevent default submission
+      errorMessage.textContent = ''; // Clear old error message
+      loginButton.disabled = true; // Disable button while processing
+      loginButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>กำลังตรวจสอบ...'; // Show loading state
+
+      const username = usernameInput.value.trim();
+      const password = passwordInput.value;
+      const rememberMe = rememberMeCheckbox.checked;
+
+      // --- Simulate Server Login ---
+      console.log('Attempting login for:', username);
+      simulateServerLogin(username, password)
+        .then(userData => {
+          // --- Login Successful ---
+          console.log('Login successful for user:', userData.username);
+          errorMessage.textContent = ''; // Ensure error message is clear
+
+          // --- Store User Session/Data (Simplified for now) ---
+          // We'll use localStorage if "Remember Me" is checked, otherwise sessionStorage
+          const storage = rememberMe ? localStorage : sessionStorage;
+          const otherStorage = rememberMe ? sessionStorage : localStorage;
+
+          // Store main user data (like ID, username, email, login status)
+          storage.setItem('currentUser', JSON.stringify(userData));
+          otherStorage.removeItem('currentUser'); // Clear the other storage type
+
+          // Store/Update separate user details (like profileImage, lastLogin, streak)
+          // This structure helps keep `currentUser` smaller and separates concerns
+          const userDataKey = 'userData_' + userData.username;
+          const userDetails = JSON.parse(storage.getItem(userDataKey) || otherStorage.getItem(userDataKey) || '{}');
+          userDetails.lastLogin = userData.lastLogin; // Update last login time
+          userDetails.profileImage = userData.profileImage; // Ensure profile image is current
+          // Streak update happens in updateLoginStreak function
+          storage.setItem(userDataKey, JSON.stringify(userDetails));
+          otherStorage.removeItem(userDataKey); // Clear from other storage
+
+          console.log('User data stored in:', storage === localStorage ? 'localStorage' : 'sessionStorage');
+
+          // --- Update Login Streak (Optional Gimmick) ---
+          updateLoginStreak(); // Calculate and potentially display streak
+
+          // --- Redirect User ---
+          // This is the crucial part that was requested
+          redirectToHomeOrProfile(userData);
+
+        })
+        .catch(error => {
+          // --- Login Failed ---
+          console.error('Login failed:', error);
+          errorMessage.textContent = error; // Display error message to user
+          loginButton.disabled = false; // Re-enable button
+          loginButton.innerHTML = '<i class="fas fa-sign-in-alt mr-2"></i>เข้าสู่ระบบ'; // Restore button text
+
+          // Shake the login card for visual feedback
+          const loginCard = document.querySelector('.login-card');
+          loginCard.classList.add('animate-shake');
+          setTimeout(() => loginCard.classList.remove('animate-shake'), 500);
+
+          // Clear any potentially stored incorrect login data
+          clearLoginData();
+        });
+    });
+
+    // --- Function to Simulate Server Login Check ---
+    function simulateServerLogin(username, password) {
+      console.log(`Simulating server check for username: ${username}`);
+      return new Promise((resolve, reject) => {
+        setTimeout(() => { // Simulate network delay
+          // --- Login Logic (Should be on Server) ---
+
+          // 1. Check Hardcoded Users (kong, admin)
+          if (username === 'kong' && password === '123') {
+            console.log('Hardcoded user "kong" matched.');
+            const userData = createUserData('kong', 'ก้องเกียรติ', 'kong@example.com', 'user_kong_001');
+            resolve(userData);
+            return;
+          }
+          if (username === 'admin' && password === 'adminpass') {
+            console.log('Hardcoded user "admin" matched.');
+            const userData = createUserData('admin', 'ผู้ดูแลระบบ', 'admin@example.com', 'user_admin_999');
+            resolve(userData);
+            return;
+          }
+
+          // 2. Check Users Registered via Simulation (from localStorage)
+          let simulatedUsers = {};
+          try {
+            simulatedUsers = JSON.parse(localStorage.getItem('simulatedUsers') || '{}');
+            console.log('Checking simulated users from localStorage:', simulatedUsers);
+          } catch (e) {
+            console.error("Error parsing simulatedUsers from localStorage:", e);
+            // Continue without simulated users if parsing fails
+          }
+
+          const registeredUser = simulatedUsers[username];
+          if (registeredUser && registeredUser.password_simulation === password) {
+            // !!! IMPORTANT SECURITY NOTE !!!
+            // This checks the plain text password stored during simulated registration.
+            // NEVER DO THIS IN A REAL APPLICATION. Real apps MUST compare password hashes.
+            console.log(`Simulated registered user "${username}" matched.`);
+            const userData = createUserData(username, username, registeredUser.email, `user_${username}_sim`); // Use username as display name for simplicity
+            resolve(userData);
+            return;
+          }
+
+          // 3. If no match found
+          console.log(`Login failed for username: ${username}. No match found.`);
+          reject('ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง');
+
+        }, 500); // Simulate 0.5 second delay
+      });
+    }
+
+    // --- Helper function to create user data object ---
+    function createUserData(username, displayName, email, userId) {
+      // Try to get existing profile image and last login from 'userData_' storage
+      const userDataKey = 'userData_' + username;
+      const storedUserDetailsString = localStorage.getItem(userDataKey) || sessionStorage.getItem(userDataKey);
+      let profileImage = null;
+      // We don't need lastLogin here, it will be set now
+
+      if (storedUserDetailsString) {
+        try {
+          const storedUserDetails = JSON.parse(storedUserDetailsString);
+          profileImage = storedUserDetails.profileImage || null;
+        } catch (e) {
+          console.error("Error parsing stored user details for", username, e);
+        }
+      }
+
+      return {
+        userId: userId, // Should come from server DB
+        username: username,
+        displayName: displayName, // Should come from server DB
+        email: email, // Should come from server DB
+        isLoggedIn: true,
+        profileImage: profileImage, // Load existing image if found
+        lastLogin: new Date().toISOString() // Set current time as last login
+      };
+    }
+
+
+    // --- Function to Handle Social Logins (Simulation) ---
+    function handleSocialLogin(provider) {
+      // This function remains largely the same - simulates social login success
+      // In a real app, this triggers provider SDK, gets token, sends to server, etc.
+      console.log(`Simulating login with ${provider}...`);
+      errorMessage.textContent = '';
+      loginButton.disabled = true; // Also disable main button during social login attempt
+      loginButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>กำลังตรวจสอบ...';
+
+      setTimeout(() => {
+        const socialUsername = `${provider}_user_${Date.now().toString().slice(-4)}`; // More unique username
+        const socialUserData = createUserData(
+          socialUsername,
+          `${provider.charAt(0).toUpperCase() + provider.slice(1)} User`,
+          `${socialUsername}@example.com`,
+          `user_${provider}_${Date.now()}`
+        );
+
+        // Social logins often use localStorage by default for persistence
+        localStorage.setItem('currentUser', JSON.stringify(socialUserData));
+        sessionStorage.removeItem('currentUser'); // Clear session storage
+
+        // Store user details separately
+        const userDataKey = 'userData_' + socialUserData.username;
+        localStorage.setItem(userDataKey, JSON.stringify({ profileImage: socialUserData.profileImage, lastLogin: socialUserData.lastLogin, streak: 1 })); // Start streak at 1
+        sessionStorage.removeItem(userDataKey);
+
+
+        console.log('Social login simulation successful for:', socialUserData.username);
+        updateLoginStreak();
+        redirectToHomeOrProfile(socialUserData);
+      }, 800);
+    }
+
+    // --- Function to Redirect User ---
+    function redirectToHomeOrProfile(userData) {
+      console.log("Preparing to redirect user:", userData.username);
+      // Optional: Show login streak message briefly before redirecting
+      if (loginStreakDiv.style.opacity !== '0') { // Check if streak is displayed
+        console.log("Showing streak message before redirect.");
+      } else {
+        console.log("Streak message not shown or streak is 1.");
+      }
+
+      // Determine target page
+      const targetPage = userData.profileImage ? 'home.html' : 'profile.html';
+      console.log(`Redirecting to: ${targetPage}`);
+
+      // --- IMPORTANT ---
+      // Ensure 'home.html' and 'profile.html' exist in the same directory
+      // or provide the correct path. Otherwise, redirection will fail silently
+      // or show a "File Not Found" error.
+
+      // Add a slightly longer delay to ensure any messages (like streak) are visible
+      setTimeout(() => {
+        try {
+          window.location.href = targetPage;
+        } catch (e) {
+          console.error("Redirection failed:", e);
+          errorMessage.textContent = "เกิดข้อผิดพลาดในการเปลี่ยนหน้าเว็บ";
+          loginButton.disabled = false; // Re-enable button if redirect fails
+          loginButton.innerHTML = '<i class="fas fa-sign-in-alt mr-2"></i>เข้าสู่ระบบ';
+        }
+      }, 1200); // Increased delay to 1.2 seconds
+    }
+
+    // --- Function to Check Login Status on Page Load ---
+    function checkLoginStatus() {
+      console.log("Checking login status on page load...");
+      const loggedInUserStr = localStorage.getItem('currentUser') || sessionStorage.getItem('sessionUser');
+      if (loggedInUserStr) {
+        console.log("Found stored user data:", loggedInUserStr);
+        try {
+          const user = JSON.parse(loggedInUserStr);
+          if (user && user.isLoggedIn) {
+            console.log('User is already logged in:', user.username);
+            // If logged in, update streak display and redirect immediately
+            updateLoginStreak(true); // true = page load, don't increment streak based on time diff
+            redirectToHomeOrProfile(user);
+          } else {
+            console.log('Stored user data indicates not logged in.');
+            clearLoginData(); // Clear invalid data
+          }
+        } catch (e) {
+          console.error("Error parsing stored user data:", e);
+          clearLoginData(); // Clear corrupted data
+        }
+      } else {
+        console.log('No user logged in.');
+        loginStreakDiv.classList.add('opacity-0'); // Hide streak if not logged in
+      }
+    }
+
+    // --- Function to Clear Stored Login Data ---
+    function clearLoginData() {
+      console.log("Clearing login data from localStorage and sessionStorage.");
+      localStorage.removeItem('currentUser');
+      sessionStorage.removeItem('currentUser');
+      // We might not want to clear 'userData_' here, as it contains profile info/streak
+      // localStorage.removeItem('userData_...'); // Be careful if clearing this
+    }
+
+    // --- Function to Update Login Streak Gimmick ---
+    function updateLoginStreak(isPageLoad = false) {
+      const currentUserDataStr = localStorage.getItem('currentUser') || sessionStorage.getItem('sessionUser');
+      if (!currentUserDataStr) {
+        loginStreakDiv.classList.add('opacity-0'); // Hide if no user
+        return;
+      }
+
+      try {
+        const user = JSON.parse(currentUserDataStr);
+        const userDataKey = 'userData_' + user.username;
+        const storage = localStorage.getItem('currentUser') ? localStorage : sessionStorage; // Check which storage holds the current user
+        const storedUserDetailsString = storage.getItem(userDataKey);
+
+        let streak = 1;
+        let lastLoginDateStr = null;
+        let userDetails = {};
+
+        if (storedUserDetailsString) {
+          userDetails = JSON.parse(storedUserDetailsString);
+          lastLoginDateStr = userDetails.lastLogin;
+          const storedStreak = userDetails.streak || 1;
+
+          if (lastLoginDateStr && !isPageLoad) {
+            const lastLogin = new Date(lastLoginDateStr);
+            const now = new Date();
+            const yesterday = new Date(now);
+            yesterday.setDate(now.getDate() - 1);
+
+            if (lastLogin.toDateString() === yesterday.toDateString()) {
+              streak = storedStreak + 1;
+            } else if (lastLogin.toDateString() === now.toDateString()) {
+              streak = storedStreak; // Same day login, no increase
+            } else {
+              streak = 1; // Streak broken
+            }
+          } else {
+            // On page load, just use the stored streak
+            streak = storedStreak;
+          }
+        }
+
+        // Update display
+        streakCountSpan.textContent = streak;
+        if (streak > 0) { // Show even if streak is 1 now
+          loginStreakDiv.classList.remove('opacity-0');
+        } else {
+          loginStreakDiv.classList.add('opacity-0');
+        }
+
+        // Save updated streak back to storage
+        userDetails.streak = streak;
+        // lastLogin is updated when login is successful, not necessarily here
+        storage.setItem(userDataKey, JSON.stringify(userDetails));
+        console.log(`Login streak for ${user.username}: ${streak}`);
+
+      } catch (e) {
+        console.error("Error updating login streak:", e);
+        loginStreakDiv.classList.add('opacity-0'); // Hide on error
+      }
+    }
+
+
+    // --- Theme Toggle Functionality ---
+    themeToggle.addEventListener('click', () => {
+      document.body.classList.toggle('dark');
+      const icon = themeToggle.querySelector('i');
+      const isDark = document.body.classList.contains('dark');
+      if (isDark) {
+        icon.classList.replace('fa-sun', 'fa-moon');
+        icon.classList.replace('text-yellow-500', 'text-gray-300');
+        localStorage.setItem('theme', 'dark');
+      } else {
+        icon.classList.replace('fa-moon', 'fa-sun');
+        icon.classList.replace('text-gray-300', 'text-yellow-500');
+        localStorage.setItem('theme', 'light');
+      }
+      console.log(`Theme changed to: ${isDark ? 'dark' : 'light'}`);
+      // Add CSS rules for .dark theme in the <style> tag or a separate CSS file
+    });
+
+    // --- Load Theme on Page Load ---
+    function loadTheme() {
+      const savedTheme = localStorage.getItem('theme');
+      const icon = themeToggle.querySelector('i');
+      if (savedTheme === 'dark') {
+        document.body.classList.add('dark');
+        icon.classList.replace('fa-sun', 'fa-moon');
+        icon.classList.replace('text-yellow-500', 'text-gray-300');
+      } else {
+        document.body.classList.remove('dark');
+        icon.classList.replace('fa-moon', 'fa-sun');
+        icon.classList.replace('text-gray-300', 'text-yellow-500');
+      }
+      console.log(`Loaded theme: ${savedTheme || 'light'}`);
+    }
+
+    // --- Initial Setup on DOMContentLoaded ---
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log("DOM fully loaded and parsed.");
+      loadTheme(); // Load theme first
+
+      // Pre-fill username if remembered
+      const rememberedUserStr = localStorage.getItem('currentUser'); // Only check localStorage for prefill
+      if (rememberedUserStr) {
+        try {
+          const rememberedUser = JSON.parse(rememberedUserStr);
+          if (rememberedUser && rememberedUser.username) {
+            usernameInput.value = rememberedUser.username;
+            rememberMeCheckbox.checked = true;
+            console.log(`Prefilled username: ${rememberedUser.username}`);
+            // passwordInput.focus(); // Optional: focus password field
+          }
+        } catch (e) { console.error("Could not parse remembered user for prefill:", e); }
+      }
+
+      checkLoginStatus(); // Check if already logged in (this might redirect)
+    });
+
+    // --- Add Shake Animation CSS ---
+    const styleSheet = document.createElement("style");
+    styleSheet.type = "text/css";
+    styleSheet.innerText = `
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        .animate-shake { animation: shake 0.5s ease-in-out; }
+    `;
+    document.head.appendChild(styleSheet);
+    console.log("Shake animation CSS added.");
+
+  </script>
+</body>
+</html>

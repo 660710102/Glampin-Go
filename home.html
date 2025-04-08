@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏕️ Glampin'Go</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+        integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        /* Base styles */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            /* Lighter background */
+            transition: background-color 0.3s ease, color 0.3s ease;
+            /* Smooth theme transition */
+        }
+
+        /* Dark mode styles */
+        body.dark {
+            background-color: #1f2937;
+            /* Dark background */
+            color: #d1d5db;
+            /* Light gray text */
+        }
+
+        body.dark .accommodation-card,
+        body.dark #search,
+        body.dark .no-results {
+            /* Apply dark mode to no-results */
+            background-color: #374151;
+            /* Darker card background */
+            border-color: #4b5563;
+        }
+
+        /* Dark mode for popover */
+        body.dark .accommodation-popover {
+            background-color: #2d3748;
+            /* Even darker popover */
+            border-color: #4b5563;
+            color: #e5e7eb;
+        }
+
+        body.dark .accommodation-popover h4 {
+            color: #f9fafb;
+        }
+
+        body.dark .accommodation-popover li {
+            border-color: #4b5563;
+        }
+
+        body.dark .accommodation-popover .text-gray-700 {
+            color: #cbd5e1;
+        }
+
+        body.dark .accommodation-popover .text-gray-500 {
+            color: #9ca3af;
+        }
+
+        body.dark .accommodation-popover .text-green-600 {
+            color: #6ee7b7;
+        }
+
+
+        body.dark .accommodation-card h3,
+        body.dark .section-title {
+            color: #f9fafb;
+            /* White text for titles */
+        }
+
+        body.dark .accommodation-card p,
+        body.dark .no-results,
+        body.dark .text-gray-600 {
+            /* Ensure text colors adapt */
+            color: #d1d5db;
+            /* Lighter gray for text */
+        }
+
+        body.dark .text-sm.text-gray-500 {
+            /* Specific dark mode for no-results subtext */
+            color: #9ca3af;
+        }
+
+
+        body.dark input {
+            background-color: #4b5563;
+            /* Darker input background */
+            border-color: #6b7280;
+            color: #f9fafb;
+        }
+
+        body.dark input::placeholder {
+            color: #9ca3af;
+        }
+
+        body.dark .reset-button {
+            background-color: #4b5563;
+            color: #f3f4f6;
+            border: 1px solid #6b7280;
+        }
+
+        body.dark .reset-button:hover {
+            background-color: #5a6678;
+        }
+
+        body.dark .profile-icon-container {
+            background-color: #4b5563;
+            border-color: #6ee7b7;
+            /* Lighter green border */
+        }
+
+        body.dark .profile-placeholder-icon {
+            color: #a7f3d0;
+        }
+
+        body.dark #contact-admin-button {
+            background-color: #4b5563;
+            color: #e5e7eb;
+        }
+
+        body.dark #contact-admin-button:hover {
+            background-color: #5a6678;
+        }
+
+        /* Card styles */
+        .accommodation-card img {
+            width: 100%;
+            height: 250px;
+            /* Increased height for better visuals */
+            object-fit: cover;
+        }
+
+        .accommodation-card {
+            background-color: white;
+            border-radius: 0.75rem;
+            /* More rounded corners for cards */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            /* Refined shadow */
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+            /* Smooth transition */
+            overflow: visible;
+            /* Allow popover to show outside card bounds */
+            display: flex;
+            /* Use flexbox for consistent height */
+            flex-direction: column;
+            position: relative;
+            /* Needed for popover positioning */
+        }
+
+        .accommodation-card .p-4 {
+            /* Ensure content area grows */
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            /* Push button to bottom */
+        }
+
+
+        .accommodation-card:hover {
+            transform: translateY(-0.5rem) scale(1.02);
+            /* Slight lift and scale on hover */
+            box-shadow: 0 8px 15px -1px rgba(0, 0, 0, 0.15), 0 4px 8px -1px rgba(0, 0, 0, 0.1);
+            /* Increased shadow on hover */
+            z-index: 10;
+            /* Bring card to front on hover */
+        }
+
+        /* Profile Icon */
+        .profile-icon-container {
+            position: absolute;
+            top: 50%;
+            right: 1rem;
+            transform: translateY(-50%);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            overflow: hidden;
+            cursor: pointer;
+            border: 2px solid #34d399;
+            background-color: #f0fdf4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .profile-icon-container:hover {
+            transform: translateY(-50%) scale(1.1);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            border-color: #22c55e;
+        }
+
+        .profile-icon-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-placeholder-icon {
+            width: 60%;
+            height: 60%;
+            color: #34d399;
+        }
+
+        /* No Results Message */
+        .no-results {
+            text-align: center;
+            color: #4b5563;
+            margin-top: 3rem;
+            padding: 2rem;
+            background-color: white;
+            border-radius: 0.75rem;
+            grid-column: 1 / -1;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        /* Inputs and Buttons Focus */
+        input,
+        button {
+            transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out, background-color 0.3s ease, color 0.3s ease;
+        }
+
+        input:focus,
+        button:focus {
+            outline: none;
+            border-color: #34d399 !important;
+            box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.3);
+        }
+
+        /* Remove number input spinners */
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input[type=number] {
+            -moz-appearance: textfield;
+            /* Firefox */
+        }
+
+        /* Button Styles */
+        .search-button {
+            background-color: #34d399;
+            color: white;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out, box-shadow 0.3s ease-in-out;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            border: none;
+            cursor: pointer;
+        }
+
+        .search-button:hover {
+            background-color: #22c55e;
+            transform: translateY(-0.25rem);
+            box-shadow: 0 6px 8px -1px rgba(0, 0, 0, 0.15), 0 3px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .reset-button {
+            background-color: #e5e7eb;
+            color: #374151;
+            font-weight: 500;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out;
+            border: 1px solid #d1d5db;
+            cursor: pointer;
+        }
+
+        .reset-button:hover {
+            background-color: #d1d5db;
+            transform: translateY(-0.125rem);
+        }
+
+        /* Section Title */
+        .section-title {
+            color: #1e293b;
+            font-weight: 700;
+            font-size: 2rem;
+            line-height: 2.5rem;
+        }
+
+        /* Theme Toggle Styles */
+        .theme-toggle-container {
+            position: fixed;
+            bottom: 70px;
+            right: 20px;
+            z-index: 50;
+        }
+
+        .theme-toggle {
+            background-color: #e5e7eb;
+            color: #4b5563;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+        }
+
+        .theme-toggle:hover {
+            background-color: #d1d5db;
+            transform: scale(1.1);
+        }
+
+        body.dark .theme-toggle {
+            background-color: #4b5563;
+            color: #d1d5db;
+        }
+
+        body.dark .theme-toggle:hover {
+            background-color: #5a6678;
+        }
+
+        /* Contact Admin Button Styles */
+        #contact-admin-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 50;
+            background-color: #4b5563;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            font-size: 0.85rem;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        #contact-admin-button:hover {
+            background-color: #5a6678;
+            transform: scale(1.05);
+        }
+
+        body.dark #contact-admin-button {
+            background-color: #374151;
+            color: #e5e7eb;
+        }
+
+        body.dark #contact-admin-button:hover {
+            background-color: #4b5563;
+        }
+
+        /* Notification Bar Styles */
+        #notification-bar {
+            position: fixed;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            min-width: 300px;
+            max-width: 90%;
+            background-color: #ef4444;
+            color: white;
+            text-align: center;
+            padding: 1rem;
+            border-radius: 0 0 0.5rem 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            transition: top 0.5s ease-in-out;
+            font-weight: 500;
+        }
+
+        #notification-bar.show {
+            top: 0;
+        }
+
+        #notification-bar.success {
+            background-color: #22c55e;
+        }
+
+        /* --- Popover Styles --- */
+        .accommodation-popover {
+            position: absolute;
+            /* Position will be set by JS */
+            left: 5%;
+            /* Default horizontal position */
+            bottom: calc(100% + 10px);
+            /* Position above the card */
+            width: 90%;
+            /* Adjust width as needed */
+            background-color: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+            padding: 1rem;
+            /* p-4 */
+            z-index: 20;
+            /* Above card, below hovered card */
+            opacity: 0;
+            transform: translateY(10px) scale(0.95);
+            /* Start slightly down and smaller */
+            transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+            pointer-events: none;
+            /* Prevent popover from interfering with mouseleave on card */
+            visibility: hidden;
+            /* Hide completely when not active */
+        }
+
+        .accommodation-card:hover .accommodation-popover {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            /* Animate to full size and position */
+            pointer-events: auto;
+            /* Allow interaction if needed (though not typical for hover) */
+            visibility: visible;
+        }
+
+        /* Optional: Arrow for popover (requires more complex CSS or pseudo-elements) */
+        /* .accommodation-popover::after { ... } */
+
+        .accommodation-popover h4 {
+            font-size: 1.125rem;
+            /* text-lg */
+            font-weight: 600;
+            /* font-semibold */
+            margin-bottom: 0.75rem;
+            /* mb-3 */
+            color: #1f2937;
+            /* Darker heading */
+            text-align: center;
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 0.5rem;
+        }
+
+        .accommodation-popover ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .accommodation-popover li {
+            border-bottom: 1px dashed #e5e7eb;
+            /* Dashed separator */
+            padding: 0.75rem 0;
+            /* py-3 */
+            font-size: 0.875rem;
+            /* text-sm */
+        }
+
+        .accommodation-popover li:last-child {
+            border-bottom: none;
+        }
+
+        .accommodation-popover .tier-name {
+            font-weight: 600;
+            /* font-semibold */
+            color: #111827;
+            /* Slightly darker text */
+            margin-bottom: 0.25rem;
+            /* mb-1 */
+            display: block;
+            /* Ensure it takes full width */
+        }
+
+        body.dark .accommodation-popover .tier-name {
+            color: #f9fafb;
+        }
+
+        .accommodation-popover .tier-price {
+            font-weight: 700;
+            /* font-bold */
+            color: #16a34a;
+            /* Green price */
+            margin-left: 0.5rem;
+        }
+
+        body.dark .accommodation-popover .tier-price {
+            color: #34d399;
+        }
+
+        .accommodation-popover .tier-features {
+            color: #4b5563;
+            /* Gray features text */
+            margin-top: 0.25rem;
+            /* mt-1 */
+            font-size: 0.8rem;
+            /* Smaller font for features */
+        }
+
+        body.dark .accommodation-popover .tier-features {
+            color: #9ca3af;
+        }
+
+        .accommodation-popover .tier-features i {
+            margin-right: 0.3rem;
+            color: #6b7280;
+            /* Icon color */
+            width: 1em;
+            /* Align icons */
+            text-align: center;
+        }
+
+        body.dark .accommodation-popover .tier-features i {
+            color: #9ca3af;
+        }
+
+        .review-button {
+            background-color: #007bff;
+            /* สีพื้นหลังหลัก */
+            color: white;
+            /* สีตัวอักษร */
+            padding: 0.75rem 1.5rem;
+            /* Adjusted padding */
+            border: none;
+            /* ลบเส้นขอบ */
+            border-radius: 0.5rem;
+            /* More rounded corners */
+            cursor: pointer;
+            font-size: 1rem;
+            /* ขนาดตัวอักษร */
+            font-weight: 600;
+            /* ทำให้ตัวอักษรหนา */
+            transition: background-color 0.3s ease;
+            /* เพิ่มความสมูทในการเปลี่ยนสี */
+        }
+
+        .review-button:hover {
+            background-color: #0056b3;
+            /* สีพื้นหลังเมื่อเมาส์ชี้ */
+        }
+
+        .review-button:focus {
+            outline: none;
+            /* ลบเส้นขอบเมื่อปุ่มถูกโฟกัส (อาจเพิ่มสไตล์อื่นเพื่อแสดงการโฟกัส) */
+        }
+
+        .review-button:active {
+            background-color: #004085;
+            /* สีพื้นหลังเมื่อปุ่มถูกคลิก */
+        }
+    </style>
+</head>
+
+<body class="text-gray-800">
+    <div id="notification-bar"></div>
+
+    <div class="container mx-auto px-4 py-8 md:py-10">
+        <header class="relative mb-8 md:mb-10 text-center">
+            <h1 class="section-title">🏕️ Glampin'Go</h1>
+            <div id="auth-section" class="absolute top-0 right-0 h-full flex items-center">
+                <a href="login.html" id="login-link" class="mr-4">
+                    <button class="search-button !py-2 !px-4 !text-sm">เข้าสู่ระบบ</button>
+                </a>
+            </div>
+        </header>
+
+        <section id="search" class="bg-white p-6 md:p-8 rounded-xl shadow-md mb-8 md:mb-10">
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 mb-4">
+                <input type="text" id="location" placeholder="พิมพ์ชื่อแคมป์ หรือจังหวัด..."
+                    class="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 w-full sm:flex-grow text-base">
+                <button onclick="applyFilters()" class="search-button w-full sm:w-auto">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    ค้นหา
+                </button>
+                <button onclick="resetFilters()" class="reset-button w-full sm:w-auto">รีเซ็ต</button>
+            </div>
+
+            <hr class="border-gray-200 dark:border-gray-600 my-4">
+
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3">
+                <input type="number" id="min-price" placeholder="ราคาต่ำสุด (บาท)" min="0"
+                    class="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 w-full sm:w-1/3 text-base">
+                <input type="number" id="max-price" placeholder="ราคาสูงสุด (บาท)" min="0"
+                    class="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 w-full sm:w-1/3 text-base">
+                <button onclick="applyFilters()" class="search-button w-full sm:w-auto">
+                    <i class="fa-solid fa-filter"></i>
+                    กรองราคา
+                </button>
+                <button class="review-button" onclick="window.location.href='review.html'">ดูคะแนนรีวิว</button>
+                <script>
+                    // Optional: You can add a script here, but the onclick attribute in the button is sufficient.
+                    // function goToReviewPage() {
+                    //   window.location.href = "review.html";
+                    // }
+                </script>
+            </div>
+        </section>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8" id="accommodation-list">
+            <p id="no-results-message" class="no-results hidden col-span-full">
+                <i class="fa-regular fa-face-sad-tear text-4xl mb-3 text-yellow-500"></i><br>
+                ไม่พบที่พักที่ตรงกับเงื่อนไขของคุณ<br>
+                <span class="text-sm text-gray-500">ลองปรับคำค้นหาหรือช่วงราคาดูนะครับ</span>
+            </p>
+        </div>
+
+        <div class="theme-toggle-container">
+            <div class="theme-toggle" id="theme-toggle" title="เปลี่ยนธีม">
+                <i class="fa-solid fa-sun text-yellow-500"></i>
+            </div>
+        </div>
+
+        <button id="contact-admin-button" title="แจ้งปัญหา">
+            <i class="fa-solid fa-flag"></i> แจ้งปัญหา
+        </button>
+    </div>
+
+    <script defer>
+        // --- Updated Accommodation Data Structure ---
+        const accommodations = [
+            {
+                id: 1, name: 'Hintok River Camp at Hellfire Pass กาญจนบุรี',
+                description: 'สัมผัสธรรมชาติใกล้ชิดที่หินตก ริเวอร์ เเคมป์ ที่พักเต็นท์หรูสไตล์ซาฟารี พร้อมสิ่งอำนวยความสะดวกครบครัน',
+                image: 'https://ak-d.tripcdn.com/images/020341200087iw96a7756_W_960_540_R5.webp',
+                priceTiers: [
+                    { price: 1500, name: 'Standard Tent', features: ['<i class="fa-solid fa-fan"></i> พัดลม', '<i class="fa-solid fa-restroom"></i> ห้องน้ำรวม'] },
+                    { price: 2000, name: 'Deluxe Tent', features: ['<i class="fa-solid fa-snowflake"></i> แอร์', '<i class="fa-solid fa-shower"></i> ห้องน้ำในตัว', '<i class="fa-solid fa-tree"></i> วิวสวน'] },
+                    { price: 2500, name: 'Luxury Tent', features: ['<i class="fa-solid fa-snowflake"></i> แอร์', '<i class="fa-solid fa-shower"></i> ห้องน้ำในตัว', '<i class="fa-solid fa-water"></i> วิวแม่น้ำ', '<i class="fa-solid fa-mug-saucer"></i> อาหารเช้า'] }
+                ]
+            },
+            {
+                id: 2, name: 'Lalamukha Tented Resort เขาใหญ่',
+                description: 'พักผ่อนสไตล์แอฟริกันซาฟารีผสมผสานป่าดิบชื้นไทย เต็นท์หรูพร้อมพื้นที่ส่วนตัว ดื่มด่ำธรรมชาติแสนโรแมนติก',
+                image: 'https://f.ptcdn.info/218/048/000/oitswk9oa66s1k8BKvU-o.jpg',
+                priceTiers: [
+                    { price: 2000, name: 'Eco Tent', features: ['<i class="fa-solid fa-fan"></i> พัดลม', '<i class="fa-solid fa-shower"></i> ห้องน้ำในตัว'] },
+                    { price: 2500, name: 'Deluxe Tent', features: ['<i class="fa-solid fa-snowflake"></i> แอร์', '<i class="fa-solid fa-shower"></i> ห้องน้ำในตัว', '<i class="fa-solid fa-mountain-sun"></i> วิวภูเขา'] },
+                    { price: 3000, name: 'Safari Suite', features: ['<i class="fa-solid fa-snowflake"></i> แอร์', '<i class="fa-solid fa-bath"></i> อ่างอาบน้ำ', '<i class="fa-solid fa-mountain-sun"></i> วิวภูเขาส่วนตัว', '<i class="fa-solid fa-champagne-glasses"></i> Welcome Drink'] }
+                ]
+            },
+            {
+                id: 3, name: 'Mont Blanc Glamping Khao Yai เขาใหญ่',
+                description: 'นอนเต็นท์หรูเหมือนโรงแรม ล้อมรอบด้วยสวนดอกไม้และธรรมชาติ ให้ความเป็นส่วนตัวสุดๆ',
+                image: 'https://paikondieow.com/wp-content/uploads/2022/03/0-0-7.jpg',
+                priceTiers: [
+                    { price: 1800, name: 'Garden View Tent', features: ['<i class="fa-solid fa-snowflake"></i> แอร์', '<i class="fa-solid fa-shower"></i> ห้องน้ำในตัว', '<i class="fa-solid fa-seedling"></i> วิวสวน'] },
+                    { price: 2200, name: 'Mountain View Tent', features: ['<i class="fa-solid fa-snowflake"></i> แอร์', '<i class="fa-solid fa-shower"></i> ห้องน้ำในตัว', '<i class="fa-solid fa-mountain"></i> วิวภูเขา'] },
+                    { price: 2600, name: 'Panoramic Suite Tent', features: ['<i class="fa-solid fa-snowflake"></i> แอร์', '<i class="fa-solid fa-shower"></i> ห้องน้ำในตัว', '<i class="fa-solid fa-binoculars"></i> วิวพาโนรามา', '<i class="fa-solid fa-mug-saucer"></i> อาหารเช้า'] }
+                ]
+            },
+            {
+                id: 4, name: 'Jumptla Campiness นครปฐม',
+                description: 'ใกล้กรุงเทพฯ นอนเต็นท์ริมแม่น้ำท่าจีน พักผ่อนใกล้ชิดธรรมชาติ สะดวกสบาย เงียบสงบ',
+                image: 'https://i0.wp.com/flyingwhale.me/wp-content/uploads/2019/09/70387250_2738293129515054_6314347424068403200_o.jpg?resize=1024%2C685&ssl=1',
+                priceTiers: [
+                    { price: 1200, name: 'River Breeze Tent', features: ['<i class="fa-solid fa-fan"></i> พัดลม', '<i class="fa-solid fa-restroom"></i> ห้องน้ำรวม', '<i class="fa-solid fa-water"></i> ใกล้แม่น้ำ'] },
+                    { price: 1500, name: 'Cozy Tent', features: ['<i class="fa-solid fa-fan"></i> พัดลม', '<i class="fa-solid fa-shower"></i> ห้องน้ำในตัว'] },
+                    { price: 1800, name: 'Riverside Tent AC', features: ['<i class="fa-solid fa-snowflake"></i> แอร์', '<i class="fa-solid fa-shower"></i> ห้องน้ำในตัว', '<i class="fa-solid fa-water"></i> ริมแม่น้ำ'] }
+                ]
+            },
+            {
+                id: 9, name: 'Te Mata Glamping เขาใหญ่',
+                description: 'Luxury Tent หลังใหญ่สุดอลังการ สิ่งอำนวยความสะดวกครบครัน เหมือนบ้านพักตากอากาศส่วนตัว',
+                image: 'https://www.temataglamping.com/wp-content/uploads/2021/09/DSC02927-scaled-980x683.jpg',
+                priceTiers: [
+                    { price: 8100, name: 'Grand Villa Tent', features: ['<i class="fa-solid fa-snowflake"></i> แอร์', '<i class="fa-solid fa-bath"></i> อ่างจากุซซี่ส่วนตัว', '<i class="fa-solid fa-tv"></i> Smart TV', '<i class="fa-solid fa-utensils"></i> ครัวขนาดเล็ก'] },
+                    { price: 9000, name: 'Pool Villa Tent', features: ['<i class="fa-solid fa-snowflake"></i> แอร์', '<i class="fa-solid fa-bath"></i> อ่างจากุซซี่', '<i class="fa-solid fa-person-swimming"></i> สระส่วนตัว', '<i class="fa-solid fa-wine-glass"></i> มินิบาร์'] },
+                    { price: 9900, name: 'Royal Suite Tent', features: ['<i class="fa-solid fa-snowflake"></i> แอร์', '<i class="fa-solid fa-bath"></i> อ่างจากุซซี่', '<i class="fa-solid fa-person-swimming"></i> สระส่วนตัวขนาดใหญ่', '<i class="fa-solid fa-bell-concierge"></i> บริการ Butler'] }
+                ]
+            },
+            // Add more accommodations with the new structure...
+            // Make sure all accommodations have the 'priceTiers' array
+            { id: 5, name: 'River Tales เพชรบุรี', description: 'แคมป์ปิ้งริมแม่น้ำแก่งกระจาน บรรยากาศดี ฟอกปอดกับธรรมชาติ มีแคมป์หลายสไตล์ให้เลือก', image: 'https://www.makalius.co.th/wp-content/post-images/165644-post/river-tales-625-790x363.jpg', priceTiers: [{ price: 1700, name: 'Garden Camp', features: ['<i class="fa-solid fa-fan"></i> พัดลม', 'ห้องน้ำรวม'] }, { price: 2100, name: 'Sweet Camp', features: ['<i class="fa-solid fa-snowflake"></i> แอร์', 'ห้องน้ำในตัว'] }, { price: 2400, name: 'Onsen Camp', features: ['<i class="fa-solid fa-snowflake"></i> แอร์', 'ห้องน้ำในตัว', '<i class="fa-solid fa-hot-tub-person"></i> ออนเซ็นส่วนตัว'] }] },
+            { id: 6, name: 'Social Camp ราชบุรี', description: 'เต็นท์กระโจมติดแอร์ ชมวิวบึงบัวกว้างใหญ่และทุ่งนาสีเขียว บรรยากาศดี ถ่ายรูปสวย', image: 'https://chillpainai.com/storage/scoop/16610/social-camp-ratchaburi-4.jpg', priceTiers: [{ price: 1900, name: 'Lotus View Tent', features: ['<i class="fa-solid fa-snowflake"></i> แอร์', 'ห้องน้ำรวม', '<i class="fa-solid fa-leaf"></i> วิวบึงบัว'] }, { price: 2300, name: 'Field View Tent AC', features: ['<i class="fa-solid fa-snowflake"></i> แอร์', 'ห้องน้ำในตัว', '<i class="fa-solid fa-tractor"></i> วิวทุ่งนา'] }, { price: 2700, name: 'Private Zone Tent', features: ['<i class="fa-solid fa-snowflake"></i> แอร์', 'ห้องน้ำในตัว', 'พื้นที่ส่วนตัว'] }] },
+            { id: 7, name: 'Slow Life Camping สัตหีบ', description: 'นอนเต็นท์โดมริมหาด ฟังเสียงคลื่น บรรยากาศเงียบสงบ กว้างขวาง พักได้ 2-4 คน', image: 'https://img.wongnai.com/p/1600x0/2019/12/17/4760a778eb304e8d822ce7668b21dc70.jpg', priceTiers: [{ price: 1100, name: 'Beach Dome (Fan)', features: ['<i class="fa-solid fa-fan"></i> พัดลม', 'ห้องน้ำรวม', '<i class="fa-solid fa-umbrella-beach"></i> ริมหาด'] }, { price: 1400, name: 'Large Beach Dome', features: ['<i class="fa-solid fa-fan"></i> พัดลม', 'ห้องน้ำรวม', 'ขนาดใหญ่'] }, { price: 1700, name: 'Sea View Dome AC', features: ['<i class="fa-solid fa-snowflake"></i> แอร์', 'ห้องน้ำในตัว', '<i class="fa-solid fa-water"></i> วิวทะเล'] }] },
+            { id: 8, name: 'The Birder’s Lodge เขาใหญ่', description: 'แคมป์ปิ้งสุดหรู เต็นท์หลังใหญ่ปิดมิดชิด ปลอดภัย เปิดประตูเจอสวนสวย เหมาะกับครอบครัวและคู่รัก', image: 'https://cms.dmpcdn.com/travel/2022/01/20/1a94db70-79d9-11ec-8be8-d9669168b830_webp_original.jpg', priceTiers: [{ price: 1600, name: 'Lodge Tent', features: ['<i class="fa-solid fa-fan"></i> พัดลม', 'ห้องน้ำรวม'] }, { price: 2000, name: 'Cabin Tent', features: ['<i class="fa-solid fa-snowflake"></i> แอร์', 'ห้องน้ำในตัว'] }, { price: 2300, name: 'Suite Lodge Tent', features: ['<i class="fa-solid fa-snowflake"></i> แอร์', 'ห้องน้ำในตัว', 'พื้นที่นั่งเล่น'] }] },
+        ];
+
+        // --- DOM Element References ---
+        const accommodationListEl = document.getElementById('accommodation-list');
+        const authSectionEl = document.getElementById('auth-section');
+        const loginLinkEl = document.getElementById('login-link');
+        const noResultsMessageEl = document.getElementById('no-results-message');
+        const locationInputEl = document.getElementById('location');
+        const minPriceInputEl = document.getElementById('min-price');
+        const maxPriceInputEl = document.getElementById('max-price');
+        const themeToggle = document.getElementById('theme-toggle');
+        const contactAdminButtonEl = document.getElementById('contact-admin-button');
+        const notificationBarEl = document.getElementById('notification-bar');
+        let notificationTimeout;
+
+        // --- Notification Function ---
+        function showNotification(message, type = 'error', duration = 3000) {
+            if (!notificationBarEl) return;
+            if (notificationTimeout) clearTimeout(notificationTimeout);
+            notificationBarEl.textContent = message;
+            notificationBarEl.className = 'show';
+            if (type === 'success') {
+                notificationBarEl.classList.add('success');
+            } else {
+                notificationBarEl.classList.remove('success');
+            }
+            notificationTimeout = setTimeout(() => {
+                notificationBarEl.classList.remove('show');
+            }, duration);
+        }
+
+        // --- Function to Create Popover HTML ---
+        /**
+         * Creates the HTML content for the price tier popover.
+         * @param {Array} priceTiers - The array of price tier objects for an accommodation.
+         * @returns {string} - The HTML string for the popover content.
+         */
+        function createPopoverHTML(priceTiers) {
+            if (!priceTiers || priceTiers.length === 0) {
+                return '<p class="text-sm text-gray-500">ไม่มีข้อมูลราคา</p>'; // Fallback message
+            }
+
+            let tiersHTML = priceTiers.map(tier => `
+                <li>
+                    <div>
+                        <span class="tier-name">${tier.name || 'รายละเอียด'}</span>
+                        <span class="tier-price">฿${tier.price.toLocaleString()}</span>
+                    </div>
+                    <div class="tier-features">
+                        ${tier.features.join(' &nbsp; ')} </div>
+                </li>
+            `).join('');
+
+            return `
+                <h4><i class="fa-solid fa-tags mr-2"></i>ราคาและประเภท</h4>
+                <ul>${tiersHTML}</ul>
+            `;
+        }
+
+
+        // --- Function to Display Accommodations (Modified for Popover) ---
+        function displayAccommodations(itemsToDisplay) {
+            if (!accommodationListEl || !noResultsMessageEl) {
+                console.error("Required elements missing.");
+                return;
+            }
+            accommodationListEl.innerHTML = '';
+            noResultsMessageEl.classList.add('hidden');
+            if (noResultsMessageEl.parentNode === accommodationListEl) {
+                accommodationListEl.removeChild(noResultsMessageEl);
+            }
+
+            if (!itemsToDisplay || itemsToDisplay.length === 0) {
+                noResultsMessageEl.classList.remove('hidden');
+                accommodationListEl.appendChild(noResultsMessageEl);
+                return;
+            }
+
+            itemsToDisplay.forEach(item => {
+                // Ensure priceTiers exists and has data, calculate min/max price
+                if (!item.priceTiers || item.priceTiers.length === 0) {
+                    console.warn(`Accommodation ID ${item.id} has no priceTiers defined.`);
+                    // Optionally skip rendering this card or show a default price
+                    return; // Skip this item if no prices
+                }
+                const prices = item.priceTiers.map(tier => tier.price);
+                const minPrice = Math.min(...prices);
+                const maxPrice = Math.max(...prices);
+
+
+                const card = document.createElement('div');
+                card.className = 'accommodation-card'; // Base card class
+
+                // Create Popover Element (hidden initially)
+                const popover = document.createElement('div');
+                popover.className = 'accommodation-popover'; // Popover styles
+                popover.innerHTML = createPopoverHTML(item.priceTiers); // Populate with price details
+
+                // Card HTML Structure (includes popover div)
+                card.innerHTML = `
+                    <img src="${item.image}" alt="${item.name}" class="w-full h-64 object-cover rounded-t-lg" onerror="this.onerror=null; this.src='https://placehold.co/600x400/e2e8f0/94a3b8?text=Glampin%27Go'; this.alt='Image placeholder';">
+                    <div class="p-4 md:p-5">
+                        <div>
+                            <h3 class="text-lg font-semibold mb-2 truncate" title="${item.name}">${item.name}</h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-3 h-20 overflow-hidden text-ellipsis">${item.description}</p>
+                        </div>
+                        <div class="flex flex-col sm:flex-row justify-between items-center mt-auto pt-3 gap-2">
+                            <div class="text-sm">
+                                <p class="text-gray-600 dark:text-gray-400">ราคาเริ่มต้น:
+                                    <span class="text-green-700 dark:text-green-400 font-bold">฿${minPrice.toLocaleString()}</span>
+                                    ${maxPrice !== minPrice ? ` - <span class="text-red-700 dark:text-red-400 font-bold">฿${maxPrice.toLocaleString()}</span>` : ''}
+                                </p>
+                            </div>
+                            <button class="book-button search-button !text-sm !py-1.5 !px-3 w-full sm:w-auto" data-id="${item.id}" data-name="${item.name}" data-price="${minPrice}">
+                                <i class="fa-solid fa-calendar-check mr-1"></i> จองเลย
+                            </button>
+                        </div>
+                    </div>
+                `;
+                // Append the hidden popover to the card
+                card.appendChild(popover);
+
+
+                accommodationListEl.appendChild(card);
+
+                // Add event listener for the booking button
+                const bookButton = card.querySelector('.book-button');
+                if (bookButton) {
+                    bookButton.addEventListener('click', (e) => {
+                        e.stopPropagation(); // Prevent card hover effects from interfering
+                        handleBooking(item.id, item.name, minPrice);
+                    });
+                }
+
+                // --- Popover Hover Logic (No longer needed as CSS handles hover) ---
+                // CSS :hover pseudo-class on .accommodation-card now controls .accommodation-popover visibility
+
+            });
+        }
+
+        // --- Function to Apply All Filters (Updated for priceTiers) ---
+        function applyFilters() {
+            if (!locationInputEl || !minPriceInputEl || !maxPriceInputEl) {
+                console.error("Filter input elements not found.");
+                return;
+            }
+            const locationQuery = locationInputEl.value.toLowerCase().trim();
+            const minPriceQuery = parseFloat(minPriceInputEl.value) || 0;
+            const maxPriceQuery = parseFloat(maxPriceInputEl.value) || Infinity;
+
+            if (minPriceQuery > 0 && maxPriceQuery !== Infinity && minPriceQuery > maxPriceQuery) {
+                showNotification('ราคาต่ำสุดต้องไม่มากกว่าราคาสูงสุด', 'error');
+                return;
+            }
+
+            console.log(`Filtering - Location: "${locationQuery}", Min Price: ${minPriceQuery}, Max Price: ${maxPriceQuery}`);
+
+            const filteredAccommodations = accommodations.filter(item => {
+                // Location Check
+                const nameMatch = item.name.toLowerCase().includes(locationQuery);
+                const descriptionMatch = item.description.toLowerCase().includes(locationQuery);
+                const locationMatch = locationQuery === '' || nameMatch || descriptionMatch;
+
+                // Price Check (Updated) - Check if *any* price tier falls within the query range
+                if (!item.priceTiers || item.priceTiers.length === 0) {
+                    return false; // Cannot match price if no tiers defined
+                }
+                const priceMatch = item.priceTiers.some(tier =>
+                    tier.price >= minPriceQuery && tier.price <= maxPriceQuery
+                );
+
+                return locationMatch && priceMatch;
+            });
+
+            displayAccommodations(filteredAccommodations);
+        }
+
+        // --- Function to Reset All Filters ---
+        function resetFilters() {
+            if (!locationInputEl || !minPriceInputEl || !maxPriceInputEl) return;
+            locationInputEl.value = '';
+            minPriceInputEl.value = '';
+            maxPriceInputEl.value = '';
+            console.log("Filters reset.");
+            applyFilters();
+        }
+
+        // --- Function to Check User Login Status and Update UI ---
+        function checkLoginStatus() {
+            if (!authSectionEl || !loginLinkEl) {
+                console.error("Authentication section elements not found.");
+                return;
+            }
+            const storedUser = localStorage.getItem('currentUser');
+            let currentUserData = null;
+
+            try {
+                if (storedUser) {
+                    currentUserData = JSON.parse(storedUser);
+                }
+            } catch (e) {
+                console.error("Error parsing user data from localStorage:", e);
+                localStorage.removeItem('currentUser');
+            }
+
+            const existingIcon = authSectionEl.querySelector('.profile-icon-container');
+            if (existingIcon) {
+                authSectionEl.removeChild(existingIcon);
+            }
+            loginLinkEl.style.display = 'block'; // Show login by default
+
+            if (currentUserData && currentUserData.isLoggedIn) {
+                loginLinkEl.style.display = 'none'; // Hide login button
+
+                const profileIconContainer = document.createElement('div');
+                profileIconContainer.className = 'profile-icon-container';
+                profileIconContainer.title = `โปรไฟล์: ${currentUserData.username || 'User'}`;
+                profileIconContainer.onclick = () => { window.location.href = 'profile.html'; };
+
+                if (currentUserData.profileImage) {
+                    const profileImg = document.createElement('img');
+                    profileImg.src = currentUserData.profileImage;
+                    profileImg.alt = 'Profile Picture';
+                    profileImg.className = 'profile-icon-img';
+                    profileImg.onerror = function () {
+                        console.warn("Profile image failed, using placeholder.");
+                        profileIconContainer.innerHTML = `<svg class="profile-placeholder-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>`;
+                    };
+                    profileIconContainer.appendChild(profileImg);
+                } else {
+                    profileIconContainer.innerHTML = `<svg class="profile-placeholder-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>`;
+                }
+                authSectionEl.appendChild(profileIconContainer);
+            }
+        }
+
+        // --- Function to Handle Booking Button Click ---
+        // (No changes needed here unless booking depends on selected tier)
+        function handleBooking(id, name, price) {
+            const storedUser = localStorage.getItem('currentUser');
+            let currentUser = null;
+            try {
+                if (storedUser) currentUser = JSON.parse(storedUser);
+            } catch (e) {
+                console.error("Error parsing user data for booking:", e);
+                showNotification('เกิดข้อผิดพลาดในการตรวจสอบสถานะล็อคอิน', 'error');
+                return;
+            }
+
+            if (!currentUser || !currentUser.isLoggedIn) {
+                showNotification('กรุณาเข้าสู่ระบบก่อนทำการจอง', 'error', 4000);
+                setTimeout(() => { window.location.href = 'login.html'; }, 1500);
+            } else {
+                console.log(`User ${currentUser.username} booking item ID: ${id}, Name: ${name}, Price: ${price}`);
+                // Passing minimum price for now
+                window.location.href = `payment.html?id=${id}&name=${encodeURIComponent(name)}&price=${price}`;
+            }
+        }
+
+        // --- Theme Toggle Functionality ---
+        function updateThemeIcon(isDark) {
+            if (!themeToggle) return;
+            const icon = themeToggle.querySelector('i');
+            if (!icon) return;
+            icon.className = isDark ? 'fa-solid fa-moon text-blue-300' : 'fa-solid fa-sun text-yellow-500';
+            document.body.classList.toggle('dark', isDark); // More direct way to set class based on boolean
+        }
+
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const isDark = savedTheme === 'dark' || (savedTheme === null && prefersDark);
+            updateThemeIcon(isDark);
+            console.log(`Loaded theme: ${isDark ? 'dark' : 'light'}`);
+        }
+
+        if (themeToggle) {
+            themeToggle.addEventListener('click', () => {
+                const isDark = document.body.classList.toggle('dark');
+                updateThemeIcon(isDark);
+                localStorage.setItem('theme', isDark ? 'dark' : 'light');
+                console.log(`Theme changed to: ${isDark ? 'dark' : 'light'}`);
+            });
+        } else {
+            console.warn("Theme toggle element not found.");
+        }
+
+        // --- Contact Admin Button Functionality ---
+        if (contactAdminButtonEl) {
+            contactAdminButtonEl.addEventListener('click', () => {
+                window.location.href = 'repot.html';
+            });
+        } else {
+            console.warn("Contact admin button element not found.");
+        }
+        // --- Initial Page Load ---
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log("DOM ready");
+            loadTheme();
+            applyFilters(); // Display initial accommodations
+            checkLoginStatus();
+        });
+    </script>
+</body>
+
+</html>

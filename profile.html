@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>โปรไฟล์ของฉัน</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+        integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Prompt', sans-serif;
+            /* Consistent Gradient Background */
+            background: linear-gradient(-45deg, #e0fdf4, #d1fae5, #a7f3d0, #6ee7b7);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 1rem;
+            /* Add padding for smaller screens */
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .profile-card {
+            transition: all 0.3s ease;
+        }
+
+        .profile-img-container {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin: 0 auto 1.5rem;
+            border: 5px solid #fff;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            background-color: #e2e8f0; /* slate-200 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .profile-img-container:hover {
+            transform: scale(1.05);
+        }
+
+        .profile-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .placeholder-icon {
+            width: 60%;
+            height: 60%;
+            color: #94a3b8; /* slate-400 */
+        }
+
+        .profile-img-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            border-radius: 50%;
+            font-size: 0.8rem;
+            text-align: center;
+        }
+
+        .profile-img-container:hover .profile-img-overlay {
+            opacity: 1;
+        }
+
+        .profile-img-overlay i {
+            font-size: 1.5rem;
+            margin-bottom: 0.25rem;
+        }
+
+        #profile-image-input {
+            display: none;
+        }
+
+        .action-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 0.75rem 1rem; /* py-3 px-4 */
+            border-radius: 0.5rem; /* rounded-lg */
+            font-weight: 600; /* font-semibold */
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            margin-bottom: 0.75rem; /* mb-3 */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .action-button i {
+            margin-right: 0.5rem;
+        }
+
+        .action-button.primary {
+            background-image: linear-gradient(to right, #10b981, #059669); /* emerald-500 to green-700 */
+            color: white;
+        }
+
+        .action-button.primary:hover {
+            background-image: linear-gradient(to right, #059669, #047857);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .action-button.secondary { /* New style for Dashboard button */
+             background-image: linear-gradient(to right, #3b82f6, #2563eb); /* blue-500 to blue-600 */
+             color: white;
+        }
+
+        .action-button.secondary:hover {
+             background-image: linear-gradient(to right, #2563eb, #1d4ed8); /* blue-600 to blue-700 */
+             transform: translateY(-2px);
+             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .action-button.danger {
+            background-image: linear-gradient(to right, #ef4444, #dc2626); /* red-500 to red-600 */
+            color: white;
+        }
+
+        .action-button.danger:hover {
+            background-image: linear-gradient(to right, #dc2626, #b91c1c);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .action-button:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.4); /* Example focus ring */
+        }
+         .action-button.secondary:focus {
+             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.4); /* Blue focus ring */
+         }
+
+        .action-button.danger:focus {
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.4);
+        }
+
+        .editable-field {
+            display: inline-flex;
+            align-items: center;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            padding: 0.1rem 0.4rem;
+            border-radius: 0.25rem;
+        }
+
+        .editable-field:hover {
+            background-color: rgba(16, 185, 129, 0.1);
+        }
+
+        .editable-field .edit-icon {
+            margin-left: 0.5rem;
+            font-size: 0.8em;
+            color: #6b7280; /* gray-500 */
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .editable-field:hover .edit-icon {
+            opacity: 1;
+        }
+
+        .editing-input {
+            border: 1px solid #10b981; /* emerald-500 */
+            border-radius: 0.25rem;
+            padding: 0.1rem 0.4rem;
+            font-weight: 500; /* medium */
+            color: #1f2937; /* gray-800 */
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+        }
+
+        .progress-container {
+            background-color: #e5e7eb; /* gray-200 */
+            border-radius: 0.5rem;
+            overflow: hidden;
+            height: 10px;
+            margin-top: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: #10b981; /* emerald-500 */
+            border-radius: 0.5rem;
+            transition: width 0.5s ease-in-out;
+            text-align: center;
+            color: white;
+            font-size: 0.7rem;
+            line-height: 10px;
+        }
+
+        .theme-toggle-container {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+        }
+
+        .theme-toggle {
+            cursor: pointer;
+            padding: 6px;
+            background-color: rgba(0, 0, 0, 0.05);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 90%;
+            width: 350px;
+            transform: scale(0.95);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+        }
+
+        /* Dark Mode Styles */
+        body.dark {
+            background: linear-gradient(-45deg, #1f2937, #111827, #0f172a, #1e293b);
+        }
+        .dark .profile-card { background-color: #1f2937; color: #e5e7eb; }
+        .dark .text-gray-800 { color: #f3f4f6; }
+        .dark .text-gray-700 { color: #d1d5db; }
+        .dark .text-gray-500 { color: #9ca3af; }
+        .dark .profile-img-container { border-color: #374151; background-color: #4b5563; }
+        .dark .placeholder-icon { color: #9ca3af; }
+        .dark .editable-field:hover { background-color: rgba(52, 211, 153, 0.15); }
+        .dark .editable-field .edit-icon { color: #9ca3af; }
+        .dark .editing-input { background-color: #374151; border-color: #34d399; color: #f3f4f6; }
+        .dark .progress-container { background-color: #374151; }
+        .dark .progress-bar { background-color: #34d399; }
+        .dark .theme-toggle { background-color: rgba(255, 255, 255, 0.1); }
+        .dark .theme-toggle:hover { background-color: rgba(255, 255, 255, 0.2); }
+        .dark .modal-content { background-color: #374151; color: #e5e7eb; }
+        .dark .modal-content .text-gray-600 { color: #d1d5db; }
+        .dark .modal-content .cancel-button { background-color: #4b5563; color: #e5e7eb; }
+        .dark .modal-content .cancel-button:hover { background-color: #5a6a7e; }
+    </style>
+</head>
+
+<body class="bg-gray-100">
+
+    <div class="bg-white p-6 md:p-8 rounded-xl shadow-xl w-full max-w-md profile-card relative">
+        <div class="theme-toggle-container">
+            <div class="theme-toggle" id="theme-toggle">
+                <i class="fas fa-sun text-yellow-500"></i>
+            </div>
+        </div>
+
+        <h1 class="text-2xl font-semibold text-gray-800 mb-6 text-center">โปรไฟล์ของฉัน</h1>
+
+        <label for="profile-image-input" class="profile-img-container">
+            <img id="profile-image-preview" src="#" alt="รูปโปรไฟล์" class="profile-img hidden">
+            <svg id="placeholder-icon" class="placeholder-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+            </svg>
+            <div class="profile-img-overlay">
+                <i class="fas fa-camera"></i>
+                <span>เปลี่ยนรูปภาพ</span>
+            </div>
+        </label>
+        <input type="file" id="profile-image-input" accept="image/*">
+
+        <div class="text-center mb-6">
+            <div class="text-xl text-gray-700 mb-2">
+                สวัสดี,
+                <span id="displayName-container" class="editable-field">
+                    <span id="displayName-text" class="font-medium text-green-600"></span>
+                    <i class="fas fa-pencil-alt edit-icon"></i>
+                </span>
+                <input type="text" id="displayName-input" class="editing-input hidden" />
+                !
+            </div>
+            <p class="text-sm text-gray-500" id="email-display"></p>
+            <p class="text-sm text-gray-500">Username: <span id="username-display" class="font-mono"></span></p>
+            <p class="text-sm text-gray-500 mt-1">Role: <span id="role-display" class="font-semibold"></span></p>
+        </div>
+
+        <div class="mb-6 px-4">
+            <label class="block text-sm font-medium text-gray-700 mb-1">ความสมบูรณ์ของโปรไฟล์</label>
+            <div class="progress-container">
+                <div id="progress-bar" class="progress-bar" style="width: 0%;"></div>
+            </div>
+            <p id="progress-text" class="text-xs text-gray-500 text-right">0%</p>
+        </div>
+
+        <div class="px-4">
+             <button id="go-dashboard-btn" class="action-button secondary">
+                <i class="fas fa-tachometer-alt"></i> ดู Dashboard
+            </button>
+            <button id="go-home-btn" class="action-button primary">
+                <i class="fas fa-home"></i> ไปหน้าหลัก
+            </button>
+            <button id="logout-btn" class="action-button danger">
+                <i class="fas fa-sign-out-alt"></i> ออกจากระบบ
+            </button>
+        </div>
+    </div>
+
+    <div id="logout-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">ยืนยันการออกจากระบบ</h2>
+            <p class="text-gray-600 mb-6">คุณต้องการออกจากระบบใช่หรือไม่?</p>
+            <div class="flex justify-center space-x-4">
+                <button id="confirm-logout-btn" class="action-button danger px-6 py-2 w-auto mb-0">
+                    <i class="fas fa-check"></i> ใช่, ออกจากระบบ
+                </button>
+                <button id="cancel-logout-btn" class="action-button cancel-button bg-gray-300 hover:bg-gray-400 text-gray-800 px-6 py-2 w-auto mb-0 shadow-none">
+                    <i class="fas fa-times"></i> ยกเลิก
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="loading-indicator" class="fixed inset-0 bg-gray-100 bg-opacity-75 flex items-center justify-center z-50 hidden">
+        <i class="fas fa-spinner fa-spin text-4xl text-green-600"></i>
+    </div>
+
+
+    <script>
+        // --- DOM Elements ---
+        const usernameDisplay = document.getElementById('username-display');
+        const emailDisplay = document.getElementById('email-display');
+        const roleDisplay = document.getElementById('role-display'); // New element for role
+        const displayNameContainer = document.getElementById('displayName-container');
+        const displayNameText = document.getElementById('displayName-text');
+        const displayNameInput = document.getElementById('displayName-input');
+        const profileImagePreview = document.getElementById('profile-image-preview');
+        const profileImageInput = document.getElementById('profile-image-input');
+        const placeholderIcon = document.getElementById('placeholder-icon');
+        const goHomeBtn = document.getElementById('go-home-btn');
+        const goDashboardBtn = document.getElementById('go-dashboard-btn'); // New dashboard button
+        const logoutBtn = document.getElementById('logout-btn');
+        const themeToggle = document.getElementById('theme-toggle');
+        const progressBar = document.getElementById('progress-bar');
+        const progressText = document.getElementById('progress-text');
+        const logoutModal = document.getElementById('logout-modal');
+        const confirmLogoutBtn = document.getElementById('confirm-logout-btn');
+        const cancelLogoutBtn = document.getElementById('cancel-logout-btn');
+        const loadingIndicator = document.getElementById('loading-indicator');
+
+        let currentUser = null; // Store combined user data
+        let isEditingDisplayName = false;
+
+        // --- Function to show/hide loading indicator ---
+        function setLoading(isLoading) {
+            loadingIndicator.classList.toggle('hidden', !isLoading);
+        }
+
+        // --- Load User Data on Page Load ---
+        window.addEventListener('load', () => {
+            console.log("Profile page loaded. Checking user status...");
+            setLoading(true);
+
+            // Prioritize localStorage for persistent login, fallback to sessionStorage
+            const storedUserStr = localStorage.getItem('currentUser') || sessionStorage.getItem('sessionUser');
+
+            if (!storedUserStr) {
+                console.log("No user data found in storage. Redirecting to login.");
+                window.location.href = 'login.html'; // Assuming login page is login.html
+                return;
+            }
+
+            try {
+                const parsedUser = JSON.parse(storedUserStr);
+                if (!parsedUser || !parsedUser.isLoggedIn) {
+                    console.log("Stored user data indicates not logged in. Redirecting.");
+                    clearLoginData();
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                // --- Synthesize User Data ---
+                currentUser = { ...parsedUser };
+
+                // Determine storage type for user details
+                const storage = localStorage.getItem('currentUser') ? localStorage : sessionStorage;
+                const userDataKey = `userData_${currentUser.username}`;
+                const userDetailsStr = storage.getItem(userDataKey);
+
+                if (userDetailsStr) {
+                    const userDetails = JSON.parse(userDetailsStr);
+                    // Merge details, giving preference to 'userData_' if available
+                    currentUser.displayName = userDetails.displayName || currentUser.displayName || currentUser.username;
+                    currentUser.profileImage = userDetails.profileImage || currentUser.profileImage;
+                    currentUser.email = userDetails.email || currentUser.email;
+                    currentUser.role = userDetails.role || currentUser.role || 'customer'; // Add role, default to 'customer'
+                } else {
+                    // Ensure defaults if no separate details found
+                    currentUser.displayName = currentUser.displayName || currentUser.username;
+                    currentUser.email = currentUser.email || 'ไม่ได้ระบุอีเมล';
+                    currentUser.role = currentUser.role || 'customer'; // Default role
+                }
+
+                // **Temporary Role Assignment (for testing if role is missing)**
+                // You should ideally set the role during login/registration
+                if (!currentUser.role) {
+                    console.warn("User role not found, assigning default 'customer'. Set role during login.");
+                    currentUser.role = 'customer';
+                    // Example: Make 'adminuser' an admin for testing
+                    if (currentUser.username === 'adminuser') {
+                         currentUser.role = 'admin';
+                         console.log("Assigned 'admin' role to adminuser for testing.");
+                    }
+                    saveUserData(); // Save the assigned role
+                }
+
+
+                console.log("User data loaded:", currentUser);
+                populateProfileData();
+                updateProfileCompletion();
+
+            } catch (e) {
+                console.error("Error parsing user data:", e);
+                clearLoginData();
+                window.location.href = 'login.html';
+            } finally {
+                setLoading(false);
+            }
+        });
+
+        // --- Populate Profile Data on the Page ---
+        function populateProfileData() {
+            if (!currentUser) return;
+
+            usernameDisplay.textContent = currentUser.username;
+            emailDisplay.textContent = currentUser.email || 'ไม่ได้ระบุอีเมล';
+            displayNameText.textContent = currentUser.displayName || currentUser.username;
+            roleDisplay.textContent = currentUser.role; // Display the role
+
+            if (currentUser.profileImage) {
+                profileImagePreview.src = currentUser.profileImage;
+                profileImagePreview.classList.remove('hidden');
+                placeholderIcon.classList.add('hidden');
+            } else {
+                profileImagePreview.classList.add('hidden');
+                placeholderIcon.classList.remove('hidden');
+            }
+        }
+
+        // --- Handle Profile Image Upload ---
+        profileImageInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file && currentUser) {
+                setLoading(true);
+                const reader = new FileReader();
+
+                reader.onload = (e) => {
+                    const imageDataUrl = e.target.result;
+                    profileImagePreview.src = imageDataUrl;
+                    profileImagePreview.classList.remove('hidden');
+                    placeholderIcon.classList.add('hidden');
+                    currentUser.profileImage = imageDataUrl;
+                    saveUserData();
+                    updateProfileCompletion();
+                    setLoading(false);
+                    console.log("Profile image updated and saved.");
+                }
+                reader.onerror = () => {
+                    console.error("Error reading file.");
+                    // Replace alert with a user-friendly message display if possible
+                    alert("เกิดข้อผิดพลาดในการอ่านไฟล์รูปภาพ");
+                    setLoading(false);
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // --- Handle Display Name Editing ---
+        displayNameContainer.addEventListener('click', () => {
+            if (!isEditingDisplayName) {
+                startEditingDisplayName();
+            }
+        });
+
+        function startEditingDisplayName() {
+            isEditingDisplayName = true;
+            displayNameText.classList.add('hidden');
+            displayNameInput.classList.remove('hidden');
+            displayNameInput.value = currentUser.displayName || currentUser.username;
+            displayNameInput.focus();
+            displayNameInput.select();
+            displayNameContainer.style.cursor = 'default';
+            displayNameContainer.style.backgroundColor = 'transparent';
+        }
+
+        function stopEditingDisplayName(saveChanges = true) {
+            if (!isEditingDisplayName) return;
+
+            if (saveChanges) {
+                const newDisplayName = displayNameInput.value.trim();
+                if (newDisplayName) {
+                    currentUser.displayName = newDisplayName;
+                    displayNameText.textContent = newDisplayName;
+                    saveUserData();
+                    updateProfileCompletion();
+                    console.log("Display name updated to:", newDisplayName);
+                } else {
+                    displayNameText.textContent = currentUser.displayName || currentUser.username;
+                    console.log("Display name change cancelled (empty input).");
+                }
+            } else {
+                displayNameText.textContent = currentUser.displayName || currentUser.username;
+                console.log("Display name change cancelled.");
+            }
+
+            displayNameText.classList.remove('hidden');
+            displayNameInput.classList.add('hidden');
+            isEditingDisplayName = false;
+            displayNameContainer.style.cursor = 'pointer';
+        }
+
+        displayNameInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                stopEditingDisplayName(true);
+            } else if (event.key === 'Escape') {
+                stopEditingDisplayName(false);
+            }
+        });
+
+        displayNameInput.addEventListener('blur', () => {
+            // Use setTimeout to allow click events on other elements before blurring
+            setTimeout(() => {
+                 if (isEditingDisplayName) { // Check if still in editing mode
+                    stopEditingDisplayName(true);
+                 }
+            }, 150);
+        });
+
+        // --- Calculate and Update Profile Completion ---
+        function updateProfileCompletion() {
+            if (!currentUser) return;
+            let completion = 0;
+            const totalPoints = 100;
+            const pointsPerItem = {
+                profileImage: 40, // Adjusted points
+                displayName: 30,
+                email: 30       // Adjusted points
+            };
+
+            if (currentUser.profileImage) {
+                completion += pointsPerItem.profileImage;
+            }
+            // Award points if display name is set AND different from username
+            if (currentUser.displayName && currentUser.displayName !== currentUser.username) {
+                completion += pointsPerItem.displayName;
+            }
+            // Award points if email is set AND looks like a valid email format
+            if (currentUser.email && currentUser.email.includes('@') && currentUser.email.includes('.')) {
+                completion += pointsPerItem.email;
+            }
+
+            completion = Math.min(completion, totalPoints);
+
+            progressBar.style.width = `${completion}%`;
+            progressText.textContent = `${completion}%`;
+            console.log(`Profile completion: ${completion}%`);
+        }
+
+        // --- Save Updated User Data to Storage ---
+        function saveUserData() {
+            if (!currentUser) return;
+            const storage = localStorage.getItem('currentUser') ? localStorage : sessionStorage;
+            const otherStorage = storage === localStorage ? sessionStorage : localStorage;
+            const userDataKey = `userData_${currentUser.username}`;
+
+            // 1. Update the main currentUser object in its original storage
+            // Ensure isLoggedIn flag remains true
+            currentUser.isLoggedIn = true;
+            storage.setItem(storage === localStorage ? 'currentUser' : 'sessionUser', JSON.stringify(currentUser));
+
+            // 2. Save/Update the separate user details object in the same storage
+            let userDetails = {};
+            try {
+                userDetails = JSON.parse(storage.getItem(userDataKey) || '{}');
+            } catch (e) { console.error("Could not parse existing userDetails, starting fresh.", e); }
+
+            // Update details from the potentially modified currentUser object
+            userDetails.displayName = currentUser.displayName;
+            userDetails.profileImage = currentUser.profileImage;
+            userDetails.email = currentUser.email;
+            userDetails.role = currentUser.role; // Save role
+
+            storage.setItem(userDataKey, JSON.stringify(userDetails));
+
+            // 3. Clear data from the other storage type to avoid conflicts
+            otherStorage.removeItem('currentUser');
+            otherStorage.removeItem('sessionUser');
+            otherStorage.removeItem(userDataKey); // Clear specific user data too
+
+            console.log("User data saved to:", storage === localStorage ? 'localStorage' : 'sessionStorage');
+        }
+
+        // --- Button Actions ---
+        goHomeBtn.addEventListener('click', () => {
+            console.log("Navigating to home.html");
+            window.location.href = 'home.html'; // Assuming home page is home.html
+        });
+
+        goDashboardBtn.addEventListener('click', () => {
+            console.log("Navigating to dashboard.html");
+            window.location.href = 'dashboard.html'; // Navigate to the new dashboard page
+        });
+
+        logoutBtn.addEventListener('click', () => {
+            logoutModal.classList.add('active');
+        });
+
+        cancelLogoutBtn.addEventListener('click', () => {
+            logoutModal.classList.remove('active');
+        });
+
+        logoutModal.addEventListener('click', (event) => {
+            if (event.target === logoutModal) {
+                logoutModal.classList.remove('active');
+            }
+        });
+
+        confirmLogoutBtn.addEventListener('click', () => {
+            console.log("Logging out user:", currentUser ? currentUser.username : 'Unknown');
+            clearLoginData();
+            logoutModal.classList.remove('active');
+            setTimeout(() => {
+                window.location.href = 'login.html';
+            }, 150);
+        });
+
+        // --- Clear Login Data Function ---
+        function clearLoginData() {
+            console.log("Clearing login data...");
+            const username = currentUser ? currentUser.username : null; // Get username before clearing
+            localStorage.removeItem('currentUser');
+            sessionStorage.removeItem('sessionUser'); // Use sessionUser for session storage key
+             if (username) {
+                 localStorage.removeItem(`userData_${username}`);
+                 sessionStorage.removeItem(`userData_${username}`);
+             }
+            currentUser = null; // Clear the in-memory user object
+        }
+
+        // --- Theme Toggle Functionality ---
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark');
+            const isDark = document.body.classList.contains('dark');
+            updateThemeIcon(isDark);
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            console.log(`Theme changed to: ${isDark ? 'dark' : 'light'}`);
+        });
+
+        function updateThemeIcon(isDark) {
+            const icon = themeToggle.querySelector('i');
+            if (isDark) {
+                icon.classList.replace('fa-sun', 'fa-moon');
+                icon.classList.replace('text-yellow-500', 'text-gray-300');
+            } else {
+                icon.classList.replace('fa-moon', 'fa-sun');
+                icon.classList.replace('text-gray-300', 'text-yellow-500');
+            }
+        }
+
+        // --- Load Theme on Page Load ---
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            const isDark = savedTheme === 'dark';
+            document.body.classList.toggle('dark', isDark);
+            updateThemeIcon(isDark);
+            console.log(`Loaded theme: ${savedTheme || 'light'}`);
+        }
+        loadTheme(); // Load theme as soon as possible
+
+    </script>
+</body>
+</html>

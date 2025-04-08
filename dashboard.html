@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - การจองและใบเสร็จ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+        integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- Base Styles --- */
+        body {
+            font-family: 'Prompt', sans-serif;
+            /* Animated gradient background */
+            background: linear-gradient(-45deg, #e0f2fe, #dbeafe, #bfdbfe, #93c5fd);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            min-height: 100vh;
+            padding: 1rem;
+            transition: background-color 0.5s ease;
+            /* Smooth theme transition */
+        }
+
+        /* Gradient Animation */
+        @keyframes gradientBG {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        /* --- Container Styles --- */
+        .dashboard-container {
+            background-color: white;
+            /* Default light theme background */
+            transition: background-color 0.3s ease, color 0.3s ease;
+            border-radius: 0.75rem;
+            /* rounded-xl */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            /* shadow-xl */
+            position: relative;
+            /* For absolute positioning of children */
+        }
+
+        /* --- Booking Card Styles --- */
+        .booking-card {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            border: 1px solid #e5e7eb;
+            /* Default light border */
+        }
+
+        .booking-card:hover {
+            transform: translateY(-3px);
+            /* Slight lift on hover */
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        /* --- Special Card Style (Birder's Lodge) --- */
+        .special-card {
+            background-color: #f0f9ff;
+            /* Light blue background */
+            border: 1px solid #bae6fd;
+            /* Sky blue border */
+            cursor: pointer;
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out, background-color 0.2s ease;
+        }
+
+        .special-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            background-color: #e0f2fe;
+            /* Slightly darker blue on hover */
+        }
+
+        .dark .special-card {
+            background-color: #1e3a8a;
+            /* Dark blue background */
+            border-color: #3b82f6;
+            /* Brighter blue border */
+        }
+
+        .dark .special-card:hover {
+            background-color: #1e40af;
+            /* Slightly lighter dark blue on hover */
+        }
+
+
+        /* --- Status Badge Styles --- */
+        .status-badge {
+            padding: 0.2rem 0.6rem;
+            border-radius: 9999px;
+            /* pill shape */
+            font-size: 0.75rem;
+            /* text-xs */
+            font-weight: 600;
+            /* font-semibold */
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-block;
+            /* Ensure proper display */
+        }
+
+        .status-confirmed {
+            background-color: #dcfce7;
+            /* green-100 */
+            color: #166534;
+            /* green-800 */
+            border: 1px solid #86efac;
+            /* green-300 */
+        }
+
+        .status-pending {
+            background-color: #ffedd5;
+            /* orange-100 */
+            color: #9a3412;
+            /* orange-800 */
+            border: 1px solid #fdba74;
+            /* orange-300 */
+        }
+
+        .status-cancelled {
+            background-color: #fee2e2;
+            /* red-100 */
+            color: #991b1b;
+            /* red-800 */
+            border: 1px solid #fca5a5;
+            /* red-300 */
+        }
+
+        /* --- Receipt Button Style --- */
+        .receipt-button {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.3rem 0.8rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            border-radius: 0.375rem;
+            /* rounded-md */
+            background-color: #e0e7ff;
+            /* indigo-100 */
+            color: #3730a3;
+            /* indigo-800 */
+            border: 1px solid #c7d2fe;
+            /* indigo-200 */
+            transition: all 0.2s ease;
+            cursor: pointer;
+            margin-top: 0.5rem;
+            /* Add some space above */
+        }
+
+        .receipt-button:hover {
+            background-color: #c7d2fe;
+            /* indigo-200 */
+            color: #312e81;
+            /* indigo-900 */
+        }
+
+        .receipt-button i {
+            margin-right: 0.3rem;
+            /* Space between icon and text */
+        }
+
+        /* --- Theme Toggle --- */
+        .theme-toggle-container {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            z-index: 10;
+            /* Ensure it's above other content */
+        }
+
+        .theme-toggle {
+            cursor: pointer;
+            padding: 6px;
+            background-color: rgba(0, 0, 0, 0.05);
+            /* Slightly transparent background */
+            border-radius: 50%;
+            /* Circular */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        /* --- Image Modal Styles --- */
+        .image-modal {
+            display: none;
+            /* Hidden by default */
+            position: fixed;
+            /* Stay in place */
+            z-index: 1000;
+            /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%;
+            /* Full width */
+            height: 100%;
+            /* Full height */
+            overflow: auto;
+            /* Enable scroll if needed */
+            background-color: rgba(0, 0, 0, 0.8);
+            /* Black w/ opacity */
+            justify-content: center;
+            /* Center horizontally */
+            align-items: center;
+            /* Center vertically */
+            padding: 20px;
+            /* Add padding around */
+        }
+
+        .modal-content {
+            margin: auto;
+            display: block;
+            max-width: 85%;
+            max-height: 85vh;
+            /* Limit height */
+            object-fit: contain;
+            /* Scale the image while preserving aspect ratio */
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 25px;
+            right: 35px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            transition: 0.3s;
+            cursor: pointer;
+            line-height: 1;
+            /* Ensure consistent positioning */
+        }
+
+        .modal-close:hover,
+        .modal-close:focus {
+            color: #bbb;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+
+        /* --- Dark Mode Styles --- */
+        body.dark {
+            /* Dark gradient background */
+            background: linear-gradient(-45deg, #1e3a8a, #172554, #0f172a, #1e293b);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+        }
+
+        .dark .dashboard-container {
+            background-color: #1f2937;
+            /* gray-800 */
+            color: #e5e7eb;
+            /* gray-200 */
+        }
+
+        /* Adjust text colors for dark mode */
+        .dark .text-gray-800 {
+            color: #f3f4f6;
+            /* gray-100 */
+        }
+
+        .dark .text-gray-700 {
+            color: #d1d5db;
+            /* gray-300 */
+        }
+
+        .dark .text-gray-600 {
+            color: #d1d5db;
+            /* gray-300 */
+        }
+
+        .dark .text-gray-500 {
+            color: #9ca3af;
+            /* gray-400 */
+        }
+
+        /* Adjust card background and border for dark mode */
+        .dark .booking-card {
+            background-color: #374151;
+            /* gray-700 */
+            border-color: #4b5563;
+            /* gray-600 */
+        }
+
+        /* Adjust status badge colors for dark mode */
+        .dark .status-confirmed {
+            background-color: #14532d;
+            /* dark green */
+            color: #bbf7d0;
+            /* light green */
+            border-color: #4ade80;
+            /* brighter green */
+        }
+
+        .dark .status-pending {
+            background-color: #7c2d12;
+            /* dark orange */
+            color: #fed7aa;
+            /* light orange */
+            border-color: #fb923c;
+            /* brighter orange */
+        }
+
+        .dark .status-cancelled {
+            background-color: #7f1d1d;
+            /* dark red */
+            color: #fecaca;
+            /* light red */
+            border-color: #f87171;
+            /* brighter red */
+        }
+
+        /* Adjust receipt button colors for dark mode */
+        .dark .receipt-button {
+            background-color: #312e81;
+            /* indigo-900 */
+            color: #e0e7ff;
+            /* indigo-100 */
+            border-color: #4338ca;
+            /* indigo-700 */
+        }
+
+        .dark .receipt-button:hover {
+            background-color: #4338ca;
+            /* indigo-700 */
+            color: #c7d2fe;
+            /* indigo-200 */
+        }
+
+        /* Adjust theme toggle background for dark mode */
+        .dark .theme-toggle {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .dark .theme-toggle:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Adjust back button colors for dark mode */
+        .dark #back-to-profile-btn {
+            color: #9ca3af;
+            /* gray-400 */
+        }
+
+        .dark #back-to-profile-btn:hover {
+            color: #60a5fa;
+            /* blue-400 */
+        }
+
+        /* Adjust loading indicator text color */
+        .dark #loading-indicator p {
+            color: #9ca3af;
+            /* gray-400 */
+        }
+
+        /* Adjust no bookings message color */
+        .dark #no-bookings-message {
+            color: #9ca3af;
+            /* gray-400 */
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100">
+    <div class="theme-toggle-container">
+        <div class="theme-toggle" id="theme-toggle" title="สลับธีม">
+            <i class="fas fa-sun text-yellow-500"></i>
+        </div>
+    </div>
+
+    <div class="container mx-auto p-4 md:p-8 max-w-4xl">
+        <div class="bg-white p-6 md:p-8 rounded-xl shadow-xl dashboard-container">
+
+            <button id="back-to-profile-btn"
+                class="absolute top-4 left-4 text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 transition duration-200 text-sm font-medium"
+                title="กลับไปหน้าโปรไฟล์">
+                <i class="fas fa-arrow-left mr-1"></i> โปรไฟล์
+            </button>
+
+            <h1 class="text-2xl md:text-3xl font-semibold text-gray-800 mb-2 text-center">Dashboard</h1>
+            <p id="dashboard-subtitle" class="text-center text-gray-600 mb-6"></p>
+            <div id="birder-lodge-card"
+                class="p-4 rounded-lg shadow border special-card mb-6 flex items-center justify-between">
+                <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">The Birder’s Lodge เขาใหญ่</h3>
+                <i class="fas fa-image text-xl text-blue-500 dark:text-blue-400"></i>
+            </div>
+
+            <div id="bookings-list" class="space-y-5">
+                <p id="no-bookings-message" class="text-center text-gray-500 py-6 hidden">ยังไม่มีรายการจองหรือใบเสร็จ
+                </p>
+            </div>
+
+            <div id="loading-indicator" class="text-center py-10 hidden">
+                <i class="fas fa-spinner fa-spin text-3xl text-blue-500"></i>
+                <p class="text-gray-500 mt-2">กำลังโหลดข้อมูล...</p>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="image-modal" class="image-modal">
+        <span class="modal-close" id="modal-close-btn" title="ปิด">&times;</span>
+        <img class="modal-content" id="modal-image"
+            src="https://cdn.discordapp.com/attachments/1356276958643622069/1358845798514950405/-BK-962602-DBGW-2025-04-07.png?ex=67f55344&is=67f401c4&hm=32618a449b959156ea0323d36baae171a0df52c71a391e4dd42f7e6ed5e87176&"
+            alt="ใบเสร็จ The Birder's Lodge เขาใหญ่"
+            onerror="this.onerror=null; this.src='https://placehold.co/600x400/eee/aaa?text=Image+Not+Found';">
+    </div>
+
+
+    <script>
+        // --- DOM Elements ---
+        const bookingsList = document.getElementById('bookings-list');
+        const dashboardSubtitle = document.getElementById('dashboard-subtitle');
+        const backToProfileBtn = document.getElementById('back-to-profile-btn');
+        const loadingIndicator = document.getElementById('loading-indicator');
+        const noBookingsMessage = document.getElementById('no-bookings-message');
+        const themeToggle = document.getElementById('theme-toggle');
+        // New elements for Birder's Lodge card and modal
+        const birderLodgeCard = document.getElementById('birder-lodge-card');
+        const imageModal = document.getElementById('image-modal');
+        const modalImage = document.getElementById('modal-image');
+        const modalCloseBtn = document.getElementById('modal-close-btn');
+
+
+        let currentUser = null; // To store user data (username, role)
+
+        // --- Function to show/hide loading indicator ---
+        function setLoading(isLoading) {
+            loadingIndicator.classList.toggle('hidden', !isLoading);
+            // Hide list and 'no bookings' message while loading
+            if (isLoading) {
+                bookingsList.classList.add('hidden');
+                noBookingsMessage.classList.add('hidden');
+                birderLodgeCard.classList.add('hidden'); // Hide special card while loading user data
+            } else {
+                // Show the list container after loading (displayBookings will handle showing the message if needed)
+                bookingsList.classList.remove('hidden');
+                birderLodgeCard.classList.remove('hidden'); // Show special card after loading
+            }
+        }
+
+        // --- Load User and Booking Data on Page Load ---
+        window.addEventListener('load', () => {
+            loadTheme(); // Apply saved theme preference first
+            setLoading(true); // Show loading indicator
+            console.log("Dashboard page loaded. Checking user status...");
+
+            // Attempt to retrieve user session from localStorage or sessionStorage
+            const storedUserStr = localStorage.getItem('currentUser') || sessionStorage.getItem('sessionUser');
+
+            // If no user data found, redirect to login/payment page
+            if (!storedUserStr) {
+                console.log("No user data found. Redirecting to payment page.");
+                window.location.href = 'payment.html'; // Redirect to payment/login
+                return; // Stop further execution
+            }
+
+            try {
+                const parsedUser = JSON.parse(storedUserStr);
+
+                // Check if user is marked as logged in
+                if (!parsedUser || !parsedUser.isLoggedIn) {
+                    console.log("User not logged in. Redirecting.");
+                    window.location.href = 'payment.html'; // Redirect to payment/login
+                    return; // Stop further execution
+                }
+
+                // --- Determine User Role ---
+                currentUser = { username: parsedUser.username, role: 'customer' }; // Default role
+                const storage = localStorage.getItem('currentUser') ? localStorage : sessionStorage;
+                const userDataKey = `userData_${currentUser.username}`;
+                const userDetailsStr = storage.getItem(userDataKey);
+
+                if (userDetailsStr) {
+                    const userDetails = JSON.parse(userDetailsStr);
+                    currentUser.role = userDetails.role || 'customer';
+                }
+
+                console.log("Current user:", currentUser);
+                setupDashboard();
+
+            } catch (e) {
+                console.error("Error loading or parsing user data:", e);
+                window.location.href = 'payment.html'; // Redirect on error
+            }
+        });
+
+        // --- Setup Dashboard based on User Role ---
+        function setupDashboard() {
+            if (currentUser.role === 'admin') {
+                dashboardSubtitle.textContent = `แสดงรายการจองและใบเสร็จทั้งหมด (Admin View)`;
+                birderLodgeCard.classList.add('hidden'); // Optionally hide special card for admin
+            } else {
+                dashboardSubtitle.textContent = `รายการจองและใบเสร็จของคุณ (${currentUser.username})`;
+                birderLodgeCard.classList.remove('hidden'); // Ensure special card is visible for customer
+            }
+            loadBookings();
+        }
+
+        // --- Load Bookings from localStorage ---
+        function loadBookings() {
+            const allBookingsStr = localStorage.getItem('bookings');
+            let allBookings = [];
+
+            if (allBookingsStr) {
+                try {
+                    allBookings = JSON.parse(allBookingsStr);
+                    if (!Array.isArray(allBookings)) {
+                        console.warn("Bookings data in localStorage is not an array. Resetting.");
+                        allBookings = [];
+                        localStorage.setItem('bookings', JSON.stringify([]));
+                    }
+                } catch (e) {
+                    console.error("Error parsing bookings data from localStorage:", e);
+                    bookingsList.innerHTML = '<p class="text-center text-red-500 dark:text-red-400">เกิดข้อผิดพลาดในการโหลดข้อมูลการจอง</p>';
+                    setLoading(false);
+                    return;
+                }
+            }
+
+            let bookingsToDisplay = [];
+            if (currentUser.role === 'admin') {
+                bookingsToDisplay = allBookings;
+            } else {
+                bookingsToDisplay = allBookings.filter(booking => booking && booking.userId === currentUser.username);
+            }
+
+            bookingsToDisplay.sort((a, b) => {
+                const dateA = a && a.date ? new Date(a.date) : 0;
+                const dateB = b && b.date ? new Date(b.date) : 0;
+                if (isNaN(dateA) && isNaN(dateB)) return 0;
+                if (isNaN(dateA)) return 1;
+                if (isNaN(dateB)) return -1;
+                return dateB - dateA;
+            });
+
+            displayBookings(bookingsToDisplay);
+            setLoading(false); // Hide loading indicator now that data is ready
+        }
+
+        // --- Display Bookings and Receipts in the List ---
+        function displayBookings(bookings) {
+            bookingsList.innerHTML = '';
+
+            if (bookings.length === 0 && currentUser.role !== 'admin') { // Show message only if customer has no bookings
+                noBookingsMessage.classList.remove('hidden');
+                // Don't return here if admin, as they might still see the special card
+            } else if (bookings.length > 0) {
+                noBookingsMessage.classList.add('hidden');
+            } else if (currentUser.role === 'admin' && bookings.length === 0) {
+                // Admin view with no bookings, show message below special card
+                noBookingsMessage.classList.remove('hidden');
+            }
+
+
+            bookings.forEach(booking => {
+                if (!booking || typeof booking !== 'object') {
+                    console.warn("Skipping invalid booking data:", booking);
+                    return;
+                }
+
+                const card = document.createElement('div');
+                card.className = 'bg-white dark:bg-gray-700 p-5 rounded-lg shadow border dark:border-gray-600 booking-card flex flex-col';
+
+                const bookingDetailsDiv = document.createElement('div');
+                bookingDetailsDiv.className = 'flex flex-col sm:flex-row sm:items-start justify-between gap-4 border-b border-gray-200 dark:border-gray-500 pb-3 mb-3';
+
+                let statusClass = 'bg-gray-200 text-gray-700 dark:bg-gray-600 dark:text-gray-300';
+                let statusText = typeof booking.status === 'string' ? booking.status.trim().toLowerCase() : 'unknown';
+                let displayStatusText = 'ไม่ทราบสถานะ';
+
+                switch (statusText) {
+                    case 'confirmed': statusClass = 'status-confirmed'; displayStatusText = 'ยืนยันแล้ว'; break;
+                    case 'pending': statusClass = 'status-pending'; displayStatusText = 'รอดำเนินการ'; break;
+                    case 'cancelled': statusClass = 'status-cancelled'; displayStatusText = 'ยกเลิกแล้ว'; break;
+                    default: statusClass = 'status-pending'; displayStatusText = booking.status || 'รอดำเนินการ'; break;
+                }
+
+                let displayDate = 'ไม่มีวันที่';
+                try {
+                    if (booking.date) {
+                        const dateObj = new Date(booking.date);
+                        if (!isNaN(dateObj)) { displayDate = dateObj.toLocaleDateString('th-TH', { year: 'numeric', month: 'short', day: 'numeric' }); }
+                    }
+                } catch (e) { console.error("Error formatting booking date:", booking.date, e); }
+
+                bookingDetailsDiv.innerHTML = `
+                    <div class="flex-grow">
+                        <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">${booking.service || 'ไม่มีชื่อบริการ'}</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-300">วันที่จอง: ${displayDate}</p>
+                        ${currentUser.role === 'admin' ? `<p class="text-sm text-gray-500 dark:text-gray-400">ผู้ใช้: ${booking.userId || 'ไม่ระบุ'}</p>` : ''}
+                        ${booking.details ? `<p class="text-sm text-gray-500 dark:text-gray-400 mt-1">รายละเอียด: ${booking.details}</p>` : ''}
+                    </div>
+                    <div class="flex-shrink-0 mt-2 sm:mt-0 text-left sm:text-right">
+                        <span class="status-badge ${statusClass}">${displayStatusText}</span>
+                    </div>
+                `;
+                card.appendChild(bookingDetailsDiv);
+
+                const paymentDetailsDiv = document.createElement('div');
+                paymentDetailsDiv.className = 'text-sm';
+
+                if (booking.paymentInfo && typeof booking.paymentInfo === 'object') {
+                    const payment = booking.paymentInfo;
+                    let paymentDate = 'ไม่มีข้อมูล';
+                    try {
+                        if (payment.paymentDate) {
+                            const paymentDateObj = new Date(payment.paymentDate);
+                            if (!isNaN(paymentDateObj)) { paymentDate = paymentDateObj.toLocaleDateString('th-TH', { year: 'numeric', month: 'short', day: 'numeric' }); }
+                        }
+                    } catch (e) { console.error("Error formatting payment date:", payment.paymentDate, e); }
+
+                    let amount = 'ไม่มีข้อมูล';
+                    if (typeof payment.amount === 'number' && !isNaN(payment.amount)) {
+                        try { amount = payment.amount.toLocaleString('th-TH', { style: 'currency', currency: 'THB' }); }
+                        catch (e) { console.error("Error formatting currency:", payment.amount, e); amount = `${payment.amount} บาท`; }
+                    } else if (payment.amount) { amount = payment.amount; }
+
+                    paymentDetailsDiv.innerHTML = `
+                        <h4 class="font-semibold text-gray-700 dark:text-gray-200 mb-1">ข้อมูลการชำระเงิน:</h4>
+                        <div class="grid grid-cols-2 gap-x-4 gap-y-1">
+                            <span class="text-gray-600 dark:text-gray-400">เลขที่ใบเสร็จ:</span> <span class="font-medium text-gray-800 dark:text-gray-100 break-words">${payment.receiptId || '-'}</span>
+                            <span class="text-gray-600 dark:text-gray-400">จำนวนเงิน:</span> <span class="font-medium text-gray-800 dark:text-gray-100">${amount}</span>
+                            <span class="text-gray-600 dark:text-gray-400">วันที่ชำระ:</span> <span class="font-medium text-gray-800 dark:text-gray-100">${paymentDate}</span>
+                            <span class="text-gray-600 dark:text-gray-400">วิธีชำระ:</span> <span class="font-medium text-gray-800 dark:text-gray-100">${payment.method || '-'}</span>
+                        </div>
+                        ${payment.receiptUrl ? `
+                        <div class="mt-3 text-right">
+                            <a href="${payment.receiptUrl}" target="_blank" rel="noopener noreferrer" class="receipt-button"> <i class="fas fa-receipt"></i> ดูใบเสร็จเต็ม </a>
+                        </div>
+                        ` : ''}
+                    `;
+                } else {
+                    paymentDetailsDiv.innerHTML = `<p class="text-gray-500 dark:text-gray-400 italic mt-2">ยังไม่มีข้อมูลการชำระเงินสำหรับรายการนี้</p>`;
+                }
+                card.appendChild(paymentDetailsDiv);
+                bookingsList.appendChild(card);
+            });
+        }
+
+        // --- Button Actions ---
+        backToProfileBtn.addEventListener('click', () => {
+            console.log("Navigating back to profile.html");
+            window.location.href = 'profile.html';
+        });
+
+        // --- Theme Toggle Functionality ---
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark');
+            const isDark = document.body.classList.contains('dark');
+            updateThemeIcon(isDark);
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        });
+
+        function updateThemeIcon(isDark) {
+            const icon = themeToggle.querySelector('i');
+            icon.classList.remove('fa-sun', 'text-yellow-500', 'fa-moon', 'text-gray-300');
+            if (isDark) {
+                icon.classList.add('fas', 'fa-moon', 'text-gray-300');
+                themeToggle.title = "สลับเป็นธีมสว่าง";
+            } else {
+                icon.classList.add('fas', 'fa-sun', 'text-yellow-500');
+                themeToggle.title = "สลับเป็นธีมมืด";
+            }
+        }
+
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            const isDark = savedTheme === 'dark';
+            document.body.classList.toggle('dark', isDark);
+            updateThemeIcon(isDark);
+        }
+
+        // --- Image Modal Functionality ---
+        if (birderLodgeCard) {
+            birderLodgeCard.addEventListener('click', () => {
+                imageModal.style.display = "flex"; // Use flex to enable alignment
+            });
+        }
+
+        if (modalCloseBtn) {
+            modalCloseBtn.addEventListener('click', () => {
+                imageModal.style.display = "none";
+            });
+        }
+
+        // Close modal if clicked outside the image content
+        if (imageModal) {
+            imageModal.addEventListener('click', (event) => {
+                // Check if the click target is the modal background itself
+                if (event.target === imageModal) {
+                    imageModal.style.display = "none";
+                }
+            });
+        }
+
+
+    </script>
+</body>
+
+</html>

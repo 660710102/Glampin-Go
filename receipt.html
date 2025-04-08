@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> ใบเสร็จการชำระเงิน </title>
+    <style>
+        /* ... สไตล์ที่คุณให้มา ... */
+    </style>
+</head>
+<body>
+    <h1>ใบเสร็จการชำระเงิน</h1>
+    <div class="receipt-container">
+        <div>
+            <h2>ที่พัก: <span id="accommodation-name"></span></h2>
+            <p>ราคา: <span id="accommodation-price"></span></p>
+            <p>วิธีการชำระเงิน: <span id="payment-method"></span></p>
+        </div>
+        <div class="total">
+            <h3>รวม: <span id="total-price"></span></h3>
+        </div>
+    </div>
+
+    <script>
+        // ดึงข้อมูลจาก localStorage
+        const bookingData = JSON.parse(localStorage.getItem('bookingData'));
+
+        // ตรวจสอบหากข้อมูลไม่มีใน localStorage ให้กลับไปหน้า Home
+        if (!bookingData) {
+            window.location.href = 'home.html';
+        }
+
+        // แสดงข้อมูลใบเสร็จ
+        document.getElementById('accommodation-name').textContent = bookingData.name;
+        document.getElementById('accommodation-price').textContent = `฿${bookingData.price} บาท/คืน`;
+        document.getElementById('payment-method').textContent = bookingData.method;
+        document.getElementById('total-price').textContent = `฿${bookingData.price}`;
+
+        // หลังจาก 10 วินาที ให้กลับไปหน้า Home
+        setTimeout(() => {
+            window.location.href = 'home.html';  // เปลี่ยนไปหน้า Home
+        }, 10000); // 10 วินาที
+    </script>
+</body>
+</html>
